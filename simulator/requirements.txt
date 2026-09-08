@@ -1,0 +1,26 @@
+# Core Physics Simulation
+pybullet>=3.1.0
+numpy>=1.24.0
+scipy>=1.10.0
+
+# CAD Import & Geometry
+trimesh>=3.21.0
+PyYAML>=6.0
+
+# Control & Signal Processing
+scikit-signal>=0.19.0
+
+# Visualization & Analysis
+matplotlib>=3.7.0
+pandas>=2.0.0
+
+# Testing & Development
+pytest>=7.0.0
+pytest-cov>=4.0.0
+
+# Hardware dashboard serial bridge
+pyserial>=3.5
+
+# Optional: Advanced CAD support
+# open3d>=0.17.0  # Point cloud processing
+# pycollada>=0.7.1  # Collada format support

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wobble | Motion Lab</title>
+  <style>
+    :root {
+      --canvas: #f5f5f7; --surface: rgba(255,255,255,.84); --surface-solid: #fff;
+      --ink: #1d1d1f; --secondary: #6e6e73; --tertiary: #a1a1a6; --line: #d2d2d7;
+      --blue: #0071e3; --green: #248a3d; --orange: #c93400; --red: #d70015;
+      --chart-blue: #007aff; --chart-orange: #ff9500; --chart-pink: #ff375f;
+      --shadow: 0 14px 38px rgba(0,0,0,.07);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: var(--canvas); font: 15px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif; letter-spacing: 0; }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .shell { max-width: 1380px; margin: auto; padding: 42px 34px 64px; }
+    .topbar { display:flex; justify-content:space-between; align-items:flex-start; gap:24px; margin-bottom: 38px; }
+    .kicker { color: var(--secondary); font-size: 12px; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; }
+    h1 { margin: 7px 0 5px; font-size: clamp(32px, 4vw, 50px); line-height: 1.04; font-weight: 700; letter-spacing: -.045em; }
+    .lede { margin: 0; color: var(--secondary); font-size: 17px; }
+    .connection { display:flex; align-items:center; gap:9px; color:var(--secondary); white-space:nowrap; padding-top: 9px; }
+    .signal { width: 9px; height: 9px; border-radius: 50%; background: var(--tertiary); }
+    .signal.live { background: var(--green); box-shadow: 0 0 0 4px rgba(36,138,61,.12); }
+    .layout { display:grid; grid-template-columns: 310px minmax(0,1fr) 310px; gap: 18px; align-items:start; }
+    .surface { background: var(--surface); border: 1px solid rgba(210,210,215,.76); border-radius: 18px; box-shadow: var(--shadow); backdrop-filter: blur(16px); }
+    .panel { padding: 24px; }
+    .panel-title { display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin:0 0 22px; font-size: 17px; letter-spacing: -.01em; }
+    .panel-title small { color:var(--tertiary); font-size: 12px; font-weight:500; }
+    .field { display:grid; gap:7px; margin-top:18px; }
+    .field:first-of-type { margin-top:0; }
+    label { color: var(--secondary); font-size: 12px; font-weight: 550; }
+    .value { float:right; color: var(--blue); font-variant-numeric: tabular-nums; }
+    select, input[type=number] { width:100%; border:1px solid var(--line); border-radius:10px; padding:10px 11px; color:var(--ink); background:rgba(255,255,255,.8); outline:none; }
+    select:focus, input[type=number]:focus { border-color:var(--blue); box-shadow:0 0 0 3px rgba(0,113,227,.13); }
+    input[type=range] { width:100%; accent-color:var(--blue); }
+    .segmented { display:grid; grid-template-columns:1fr 1fr; padding:3px; gap:3px; background:#e8e8ed; border-radius:9px; }
+    .segmented button { border:0; border-radius:7px; padding:8px 5px; color:var(--secondary); background:transparent; font-size:12px; }
+    .segmented button.active { color:var(--ink); background:#fff; box-shadow:0 1px 4px rgba(0,0,0,.12); }
+    .actions { display:grid; gap:9px; margin-top:22px; }
+    .actions button { border:0; border-radius:10px; padding:11px 14px; font-weight:650; }
+    .primary { color:#fff; background:var(--blue); }
+    .secondary { color:var(--blue); background:rgba(0,113,227,.09); }
+    .danger { color:var(--red); background:rgba(215,0,21,.08); }
+    .actions button:active { transform:scale(.98); }
+    .chart-panel { min-width:0; padding: 26px 28px 20px; }
+    .chart-head { display:flex; justify-content:space-between; gap:20px; align-items:flex-start; }
+    .chart-head h2 { margin:0; font-size:22px; letter-spacing:-.025em; }
+    .chart-head p { margin:4px 0 0; color:var(--secondary); }
+    .range-note { color:var(--tertiary); font-size:12px; white-space:nowrap; }
+    .metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:26px 0 18px; }
+    .metric { padding:15px 16px; border-left:3px solid var(--chart-blue); background:#f7f7f8; border-radius:4px 10px 10px 4px; }
+    .metric:nth-child(2) { border-color:var(--chart-orange); } .metric:nth-child(3) { border-color:var(--chart-pink); }
+    .metric label { display:block; margin-bottom:4px; }
+    .metric strong { font-size:29px; line-height:1; letter-spacing:-.04em; font-variant-numeric:tabular-nums; }
+    .unit { color:var(--secondary); font-size:12px; margin-left:3px; }
+    canvas { display:block; width:100%; height:330px; border-top:1px solid #e5e5e7; border-bottom:1px solid #e5e5e7; }
+    .legend { display:flex; gap:18px; padding-top:13px; color:var(--secondary); font-size:12px; }
+    .legend i { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; }
+    .status { padding:24px; }
+    .status-row { display:flex; justify-content:space-between; gap:16px; padding:12px 0; border-bottom:1px solid #e5e5e7; color:var(--secondary); font-size:13px; }
+    .status-row:last-child { border-bottom:0; } .status-row strong { color:var(--ink); text-align:right; font-weight:550; font-variant-numeric:tabular-nums; }
+    .badge { display:inline-flex; align-items:center; gap:5px; color:var(--green); font-size:12px; font-weight:650; }
+    .badge::before { content:""; width:6px; height:6px; background:currentColor; border-radius:50%; }
+    .badge.warn { color:var(--orange); } .badge.bad { color:var(--red); }
+    .progress { height:5px; margin-top:20px; background:#e5e5e7; border-radius:99px; overflow:hidden; }
+    .progress div { width:0; height:100%; background:var(--blue); transition:width .2s; }
+    .footnote { margin:18px 0 0; color:var(--tertiary); font-size:12px; }
+    .error { min-height:18px; margin-top:10px; color:var(--red); font-size:12px; }
+    @media (max-width: 1120px) { .layout { grid-template-columns: 280px minmax(0,1fr); } .status { grid-column: 1 / -1; display:grid; grid-template-columns:repeat(2,1fr); gap:0 28px; } .status .panel-title { grid-column:1/-1; } }
+    @media (max-width: 720px) { .shell { padding:26px 16px 40px; } .topbar { display:block; margin-bottom:26px; } .connection { padding-top:18px; } .layout { display:block; } .surface { margin-bottom:14px; } .chart-panel { padding:22px 17px 18px; } .metrics { gap:6px; } .metric { padding:12px 9px; } .metric strong { font-size:22px; } .range-note { display:none; } .status { display:block; } canvas { height:260px; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition:none !important; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div><div class="kicker">Motion lab / live instrument</div><h1>Wobble</h1><p class="lede">A quiet view of movement, orientation, and motor health.</p></div>
+      <div class="connection"><i class="signal live" id="connectionDot"></i><span id="connectionText">Preview telemetry</span></div>
+    </header>
+    <section class="layout">
+      <article class="surface panel">
+        <h2 class="panel-title">Command <small>step / dir</small></h2>
+        <div class="field"><label for="pattern">Movement pattern</label><select id="pattern"><option value="distance">Run distance</option><option value="sustain">Sustain rocking</option><option value="once">Rock once, auto-stop</option><option value="peer">Peer x intensity</option></select></div>
+        <div class="field"><label for="rpm">Peak speed <span class="value"><b id="rpmValue">60</b> RPM</span></label><input id="rpm" type="range" min="1" max="240" value="60"></div>
+        <div class="field"><label for="accelCmd">Acceleration <span class="value"><b id="accelValue">60</b> RPM/s</span></label><input id="accelCmd" type="range" min="1" max="120" value="60"></div>
+        <div class="field"><label for="distance">Distance <span class="value">revolutions</span></label><input id="distance" type="number" min="0" step=".01" value="1"></div>
+        <div class="field"><label for="amplitude">Rock amplitude <span class="value">one-way rev</span></label><input id="amplitude" type="number" min=".01" step=".01" value=".25"></div>
+        <div class="field"><label>Direction</label><div class="segmented"><button class="dir active" data-dir="1">Clockwise</button><button class="dir" data-dir="-1">Counter</button></div></div>
+        <div class="actions"><button class="primary" id="run">Run command</button><button class="secondary" id="stop">Stop motion</button><button class="danger" id="estop">Emergency stop</button></div>
+        <div class="progress"><div id="progressBar"></div></div><div class="error" id="error"></div>
+        <p class="footnote">Distance is measured at the motor shaft. A value of 0 runs continuously until stopped.</p>
+      </article>
+      <article class="surface chart-panel">
+        <div class="chart-head"><div><h2>Orientation</h2><p>Relative to tare position</p></div><span class="range-note">Last 30 seconds</span></div>
+        <div class="metrics"><div class="metric"><label>Heading / yaw</label><strong id="heading">0.0</strong><span class="unit">deg</span></div><div class="metric"><label>Roll</label><strong id="roll">0.0</strong><span class="unit">deg</span></div><div class="metric"><label>Pitch</label><strong id="pitch">0.0</strong><span class="unit">deg</span></div></div>
+        <canvas id="chart" width="1000" height="330" aria-label="Live orientation chart"></canvas>
+        <div class="legend"><span><i style="background:var(--chart-blue)"></i>Heading</span><span><i style="background:var(--chart-orange)"></i>Roll</span><span><i style="background:var(--chart-pink)"></i>Pitch</span></div>
+      </article>
+      <article class="surface status">
+        <h2 class="panel-title">Instrument state <small>current</small></h2>
+        <div class="status-row"><span>Motor</span><strong class="badge" id="motorState">Idle</strong></div><div class="status-row"><span>Speed / target</span><strong id="motorRpm">0 / 0 RPM</strong></div><div class="status-row"><span>Acceleration</span><strong id="motorAccel">0 RPM/s</strong></div><div class="status-row"><span>Travel</span><strong id="travel">0.00 rev</strong></div><div class="status-row"><span>Calibration</span><strong id="calibration">Ready</strong></div><div class="status-row"><span>Sensor</span><strong id="sensor">BNO055</strong></div><div class="status-row"><span>Last packet</span><strong id="lastPacket">now</strong></div>
+      </article>
+    </section>
+  </main>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const series = { heading: [], roll: [], pitch: [] }, maxPoints = 160;
+    let direction = 1, lastSampleSeq = 0, previewTime = 0;
+    document.querySelectorAll('.dir').forEach((button) => button.addEventListener('click', () => { direction = Number(button.dataset.dir); document.querySelectorAll('.dir').forEach((item) => item.classList.toggle('active', item === button)); }));
+    $('rpm').addEventListener('input', () => $('rpmValue').textContent = $('rpm').value);
+    $('accelCmd').addEventListener('input', () => $('accelValue').textContent = $('accelCmd').value);
+    function fixed(value, digits = 1) { return Number.isFinite(Number(value)) ? Number(value).toFixed(digits) : '0.0'; }
+    function addSample(sample) { ['heading', 'roll', 'pitch'].forEach((key) => { series[key].push(Number(sample[key]) || 0); if (series[key].length > maxPoints) series[key].shift(); }); }
+    function drawChart() {
+      const canvas = $('chart'), ctx = canvas.getContext('2d'), w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h); ctx.strokeStyle = '#e5e5e7'; ctx.lineWidth = 1;
+      for (let i = 1; i < 5; i++) { const y = i * h / 5; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+      const all = [].concat(series.heading, series.roll, series.pitch), spread = Math.max(12, ...all.map((value) => Math.abs(value))), mid = h / 2;
+      [['heading', '#007aff'], ['roll', '#ff9500'], ['pitch', '#ff375f']].forEach(([key, color]) => { const data = series[key], count = Math.max(2, data.length); ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath(); data.forEach((value, index) => { const x = index * w / (count - 1), y = mid - value / spread * (h * .4); index ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke(); });
+    }
+    function render(state) {
+      const imu = state.imu || {}, motor = state.motor || {};
+      $('heading').textContent = fixed(imu.heading); $('roll').textContent = fixed(imu.roll); $('pitch').textContent = fixed(imu.pitch);
+      $('motorState').textContent = motor.estopped ? 'E-stop' : (motor.running ? 'Running' : 'Idle'); $('motorState').className = `badge ${motor.estopped ? 'bad' : (motor.running ? '' : '')}`;
+      $('motorRpm').textContent = `${fixed(motor.rpm, 0)} / ${fixed(motor.target_rpm, 0)} RPM`; $('motorAccel').textContent = `${fixed(motor.accel_rpm_s, 0)} RPM/s`; $('travel').textContent = `${fixed(motor.distance_rev, 2)} rev`;
+      $('calibration').textContent = imu.calibration ? 'Calibrated' : 'Ready'; $('sensor').textContent = state.sensor || 'BNO055'; $('lastPacket').textContent = state.last_rx ? new Date(state.last_rx * 1000).toLocaleTimeString() : 'preview';
+      const total = Number(motor.target_steps) || 0, current = Math.abs(Number(motor.position_steps) || 0); $('progressBar').style.width = total ? `${Math.min(100, current / total * 100)}%` : (motor.running ? '100%' : '0%'); drawChart();
+    }
+    function preview() { previewTime += .08; const t = previewTime; const sample = { heading: (t * 12) % 360, roll: Math.sin(t * 2) * 3.5, pitch: Math.cos(t * 1.7) * 2 }; addSample(sample); render({ imu: {...sample, calibration: 255}, motor: { running: false, estopped: false, rpm: 0, target_rpm: 0, accel_rpm_s: 60, distance_rev: 0, position_steps: 0, target_steps: 0 }, sensor: 'BNO055', last_rx: Date.now() / 1000 }); }
+    async function command(cmd) { $('error').textContent = ''; try { const response = await fetch('/api/command', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(cmd) }); const body = await response.json(); if (!body.ok) $('error').textContent = body.error || 'Command failed'; } catch (error) { $('error').textContent = 'Preview mode: bridge is not connected'; } }
+    $('run').onclick = () => { const pattern = $('pattern').value, common = { rpm: Number($('rpm').value), accel: Number($('accelCmd').value), direction }; if (pattern === 'distance') command({...common, cmd: 'run', distance_rev: Number($('distance').value)}); else command({...common, cmd: pattern === 'peer' ? 'peer_rock' : 'rock', amplitude_rev: Number($('amplitude').value), cycles: pattern === 'once' ? 2 : 0}); };
+    $('stop').onclick = () => command({cmd: 'stop'}); $('estop').onclick = () => command({cmd: 'estop'});
+    async function refresh() { if (location.port === '8081') { preview(); return; } try { const response = await fetch(`/api/state?since=${lastSampleSeq}`, {cache:'no-store'}); const state = await response.json(); (state.samples || []).forEach((sample) => { addSample(sample); lastSampleSeq = Math.max(lastSampleSeq, Number(sample.seq) || 0); }); render(state); } catch (error) { preview(); } }
+    setInterval(refresh, 100); drawChart();
+  </script>
+</body>
+</html>
