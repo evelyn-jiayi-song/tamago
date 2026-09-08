@@ -6,3 +6,4 @@ venv/
 .env
 .vscode/
 *.log
+simulator/wifi_dashboard/firmware/wifi_secrets.py

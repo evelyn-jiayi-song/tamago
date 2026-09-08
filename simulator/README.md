@@ -15,37 +15,27 @@ A precision physics simulation environment for testing motor control methods on 
 
 ```
 simulator/
-├── README.md                          # This file
-├── requirements.txt                   # Python dependencies
-├── setup.py                          # Package configuration
-├── config/
-│   ├── simulation_config.yaml         # Global physics parameters
-│   └── egg_models/                    # CAD model definitions
-│       └── sample_egg.yaml            # Example: mass, CoM, geometry
+├── README.md                          # Simulator and hardware setup
+├── requirements.txt                   # Python and dashboard dependencies
 ├── src/
-│   ├── __init__.py
-│   ├── physics_engine.py              # PyBullet wrapper & dynamics
-│   ├── cad_importer.py                # CAD file handling (STEP, URDF, OBJ)
-│   ├── egg_model.py                   # Egg body with configurable mass/CoM
+│   ├── physics_engine.py              # Rigid-body dynamics
+│   ├── egg_model.py                   # Egg geometry and mass properties
 │   ├── motor_methods.py               # 10 motor control implementations
-│   ├── test_harness.py                # Test runner for all methods
-│   ├── metrics.py                     # Success metric calculators
-│   └── visualization.py               # Real-time 3D visualization (optional)
-├── tests/
-│   ├── __init__.py
-│   ├── test_cad_import.py             # CAD loading validation
-│   ├── test_physics_engine.py         # Dynamics verification
-│   ├── test_motor_methods.py          # Individual method tests
-│   └── test_metrics.py                # Metric computation validation
+│   ├── metrics.py                     # Evaluation metrics
+│   └── cad_importer.py                # STEP, STL, OBJ, URDF, and YAML import
 ├── experiments/
-│   ├── baseline_tests.py              # Standard test suite
-│   ├── frequency_sweep.py             # Resonance characterization
-│   ├── energy_efficiency_test.py      # Power consumption analysis
-│   └── results/                       # Output data and plots
+│   ├── baseline_tests.py              # Standard motor-method benchmark
+│   ├── main.py                        # Experiment entry point
+│   └── upload_main.py                 # Upload helper
+├── dashboard/
+│   ├── server.py                      # Local serial-to-web bridge
+│   ├── index.html                     # Live control dashboard
+│   └── run_*.py                       # Hardware commissioning tools
+├── firmware/
+│   ├── main.py                        # ESP32 MicroPython application
+│   └── bno055.py                      # BNO055 driver fallback
 └── docs/
-    ├── PHYSICS_MODEL.md               # First-principles dynamics
-    ├── CAD_IMPORT_GUIDE.md            # How to export from Fusion 360
-    └── ADDING_MOTOR_METHODS.md        # Extension guide for new methods
+   └── CAD_IMPORT_GUIDE.md            # Fusion 360 export guidance
 ```
 
 ## Quick Start
@@ -54,28 +44,46 @@ simulator/
 
 ```bash
 cd simulator
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 2. Import a CAD Model
+### 2. Run the Simulator Benchmark
+
+Run all ten motor methods, or select one method by its 1-based index:
+
+```bash
+python experiments/baseline_tests.py --duration 30 --target-angle 15
+python experiments/baseline_tests.py --method 1 --duration 10 --target-angle 15
+```
+
+Results are written to `results/baseline_study.json` by default. Add `--gui`
+when running a single method to open the PyBullet viewer.
+
+### 3. Import a CAD Model
 
 ```python
-from src.cad_importer import import_cad
+from src.cad_importer import CADImporter
 from src.egg_model import EggModel
 
 # Load Fusion 360 exported model (STEP format)
-geometry = import_cad('path/to/fusion_export.step')
+geometry = CADImporter.import_file('path/to/fusion_export.step')
 
 # Configure physical properties
-egg = EggModel(
-    geometry=geometry,
-    mass=500,  # grams
-    center_of_mass=(0, 0, -25),  # mm, relative to geometric center
-    inertia_tensor=[[1e5, 0, 0], [0, 1e5, 0], [0, 0, 9e4]]  # g·mm²
+egg = EggModel.from_dict({
+   'name': 'my_egg',
+   'geometry': geometry,
+   'mass': 500,
+   'center_of_mass': [0, 0, -25],
+   'inertia_tensor': [[1e5, 0, 0], [0, 1e5, 0], [0, 0, 9e4]],
+   }
 )
 ```
 
-### 3. Test a Motor Method
+For Fusion 360 export details, see [docs/CAD_IMPORT_GUIDE.md](docs/CAD_IMPORT_GUIDE.md).
+
+### 4. Test a Motor Method
 
 ```python
 from src.motor_methods import EccentricMassSpinner
@@ -93,14 +101,6 @@ metrics = results.compute_metrics()
 print(f"Tilt accuracy: {metrics['tilt_error']:.2f}°")
 print(f"Settling time: {metrics['settling_time']:.2f} s")
 print(f"Power consumed: {metrics['power_average']:.2f} W")
-```
-
-### 4. Run Full Benchmark
-
-```bash
-python experiments/baseline_tests.py \
-    --model config/egg_models/sample_egg.yaml \
-    --output results/benchmark_2026_08_18.json
 ```
 
 ## ESP32 motor + IMU dashboard
