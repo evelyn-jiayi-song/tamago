@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Egg Ripple Lab</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07111f;
+      --panel: rgba(15, 28, 47, .86);
+      --panel-soft: rgba(23, 43, 68, .72);
+      --line: rgba(157, 190, 225, .17);
+      --text: #eef6ff;
+      --muted: #96acc4;
+      --cyan: #6ce8ff;
+      --amber: #ffc66d;
+      --green: #8ee6bf;
+      --danger: #ff8c9c;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: radial-gradient(circle at 70% 10%, #17365a 0, var(--bg) 42%);
+      color: var(--text);
+      font: 14px/1.45 Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+    }
+    .shell { min-height: 100vh; display: grid; grid-template-columns: 330px 1fr; }
+    aside { padding: 24px 22px; border-right: 1px solid var(--line); background: rgba(5, 14, 27, .62); backdrop-filter: blur(18px); }
+    main { min-height: 100vh; position: relative; }
+    h1 { margin: 0 0 6px; font-size: 25px; letter-spacing: -.03em; }
+    h2 { margin: 24px 0 10px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .13em; }
+    p { color: var(--muted); margin: 0; }
+    .eyebrow { color: var(--cyan); font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+    .card { border: 1px solid var(--line); border-radius: 16px; background: var(--panel); box-shadow: 0 14px 36px rgba(0,0,0,.18); }
+    .hero { padding: 16px; margin-top: 18px; }
+    .metric { display: flex; justify-content: space-between; align-items: baseline; padding: 7px 0; border-bottom: 1px solid var(--line); }
+    .metric:last-child { border-bottom: 0; }
+    .metric span:first-child { color: var(--muted); }
+    .metric strong { font-variant-numeric: tabular-nums; }
+    .control { margin-top: 14px; }
+    label { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 7px; color: var(--muted); }
+    output { color: var(--text); font-variant-numeric: tabular-nums; }
+    input[type=range] { width: 100%; accent-color: var(--cyan); }
+    button { border: 1px solid rgba(170,210,240,.22); border-radius: 10px; padding: 10px 12px; color: var(--text); background: var(--panel-soft); cursor: pointer; font: inherit; transition: border-color .18s, background .18s, transform .18s; }
+    button:hover { border-color: var(--cyan); background: rgba(62,121,160,.38); }
+    button:active { transform: translateY(1px); }
+    button.primary { color: #06121d; background: var(--cyan); border-color: var(--cyan); font-weight: 750; }
+    button.warning { color: #231605; background: var(--amber); border-color: var(--amber); font-weight: 700; }
+    button.ghost { padding: 7px 9px; font-size: 12px; }
+    .button-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .button-row.three { grid-template-columns: 1fr 1fr 1fr; }
+    .legend { display: grid; gap: 8px; }
+    .legend-line { display: flex; gap: 8px; align-items: center; color: var(--muted); font-size: 12px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 13px var(--cyan); }
+    .dot.amber { background: var(--amber); box-shadow: 0 0 13px var(--amber); }
+    .dot.green { background: var(--green); box-shadow: 0 0 13px var(--green); }
+    #scene { position: absolute; inset: 0; }
+    .scene-hud { position: absolute; left: 24px; right: 24px; top: 20px; display: flex; justify-content: space-between; align-items: start; pointer-events: none; }
+    .scene-hud .card { padding: 11px 14px; pointer-events: auto; }
+    .status { display: flex; align-items: center; gap: 8px; color: var(--green); }
+    .status i { display: block; width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 12px currentColor; }
+    .status.paused { color: var(--amber); }
+    .help { max-width: 260px; color: var(--muted); font-size: 12px; text-align: right; }
+    .pads { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+    .pad { padding: 6px 0; font-size: 11px; line-height: 1; }
+    .pad.center { color: #06121d; background: var(--amber); border-color: var(--amber); font-weight: 800; }
+    .small-note { margin-top: 8px; color: var(--muted); font-size: 11px; }
+    @media (max-width: 850px) {
+      .shell { grid-template-columns: 1fr; }
+      aside { border-right: 0; border-bottom: 1px solid var(--line); }
+      main { min-height: 70vh; }
+      .hero { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside>
+      <div class="eyebrow">Interactive 3D study</div>
+      <h1>Egg Ripple Lab</h1>
+      <p>Push the balanced center egg and watch a damped wave travel through the 5×5 field.</p>
+
+      <div class="card hero">
+        <div class="metric"><span>Simulation time</span><strong id="timeValue">0.00 s</strong></div>
+        <div class="metric"><span>Active eggs</span><strong id="activeValue">0 / 25</strong></div>
+        <div class="metric"><span>Wavefront</span><strong id="frontValue">—</strong></div>
+      </div>
+
+      <h2>Push controls</h2>
+      <div class="button-row">
+        <button class="primary" id="pushCenter">Push center</button>
+        <button class="warning" id="demo">Demo playback</button>
+      </div>
+      <div class="button-row three" style="margin-top: 8px">
+        <button class="ghost" id="pause">Pause</button>
+        <button class="ghost" id="reset">Reset</button>
+        <button class="ghost" id="step">Step 100 ms</button>
+      </div>
+
+      <h2>Model parameters</h2>
+      <div class="control">
+        <label for="strength">Push strength <output id="strengthValue">0.80</output></label>
+        <input id="strength" type="range" min="0.1" max="1" value="0.8" step="0.05">
+      </div>
+      <div class="control">
+        <label for="speed">Propagation speed <output id="speedValue">3.0 cells/s</output></label>
+        <input id="speed" type="range" min="0.5" max="8" value="3" step="0.5">
+      </div>
+      <div class="control">
+        <label for="damping">Damping per hop <output id="dampingValue">0.72×</output></label>
+        <input id="damping" type="range" min="0.35" max="0.98" value="0.72" step="0.01">
+      </div>
+
+      <h2>Push an individual egg</h2>
+      <div class="pads" id="pads" aria-label="5 by 5 egg push controls"></div>
+      <div class="small-note">You can also click an egg in the scene. Drag to orbit; scroll to zoom.</div>
+
+      <h2>Legend</h2>
+      <div class="legend">
+        <div class="legend-line"><i class="dot amber"></i> source / direct push</div>
+        <div class="legend-line"><i class="dot"></i> active ripple</div>
+        <div class="legend-line"><i class="dot green"></i> balanced / still</div>
+      </div>
+    </aside>
+    <main>
+      <div id="scene" aria-label="Interactive 3D egg ripple scene"></div>
+      <div class="scene-hud">
+        <div class="card status" id="status"><i></i><span>Running</span></div>
+        <div class="card help">Each hop adds a distance-based delay and multiplies amplitude by damping.</div>
+      </div>
+    </main>
+  </div>
+
+  <script type="importmap">
+    {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.172.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.172.0/examples/jsm/"}}
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+    const SIZE = 5;
+    const GRID_SPACING = 2.05;
+    const CENTER = 2;
+    const sceneHost = document.querySelector('#scene');
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.Fog(0x07111f, 16, 32);
+    const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
+    camera.position.set(8.8, 9.2, 10.2);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    sceneHost.appendChild(renderer.domElement);
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.target.set(0, 0.8, 0);
+    controls.enableDamping = true;
+
+    scene.add(new THREE.HemisphereLight(0xcdeeff, 0x0b1426, 2.2));
+    const key = new THREE.DirectionalLight(0xffe5c0, 3.4);
+    key.position.set(4, 10, 5);
+    key.castShadow = true;
+    scene.add(key);
+    const fill = new THREE.PointLight(0x62dfff, 30, 18, 2);
+    fill.position.set(-4, 4, 1);
+    scene.add(fill);
+
+    const floor = new THREE.Mesh(
+      new THREE.CylinderGeometry(7.4, 7.8, 0.35, 64),
+      new THREE.MeshStandardMaterial({ color: 0x0b1d31, roughness: .76, metalness: .18 })
+    );
+    floor.position.y = -0.35;
+    floor.receiveShadow = true;
+    scene.add(floor);
+    const ring = new THREE.Mesh(
+      new THREE.RingGeometry(5.65, 5.72, 96),
+      new THREE.MeshBasicMaterial({ color: 0x28617c, transparent: true, opacity: .7, side: THREE.DoubleSide })
+    );
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.y = -.16;
+    scene.add(ring);
+
+    function createEggMaterial(index) {
+      const isCenter = index === CENTER * SIZE + CENTER;
+      return new THREE.MeshStandardMaterial({
+        color: isCenter ? 0xffb24d : 0x68cfe4,
+        emissive: isCenter ? 0x6b2f08 : 0x06293a,
+        emissiveIntensity: isCenter ? .48 : .18,
+        roughness: .32,
+        metalness: .05,
+      });
+    }
+
+    function createEgg(index) {
+      const profile = [
+        new THREE.Vector2(0, -1.02), new THREE.Vector2(.42, -.94),
+        new THREE.Vector2(.72, -.60), new THREE.Vector2(.82, -.12),
+        new THREE.Vector2(.72, .42), new THREE.Vector2(.51, .82),
+        new THREE.Vector2(.22, 1.12), new THREE.Vector2(0, 1.26)
+      ];
+      const mesh = new THREE.Mesh(new THREE.LatheGeometry(profile, 32), createEggMaterial(index));
+      const row = Math.floor(index / SIZE);
+      const col = index % SIZE;
+      mesh.position.set((col - CENTER) * GRID_SPACING, 1.02, (row - CENTER) * GRID_SPACING);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      mesh.userData.index = index;
+      scene.add(mesh);
+      return mesh;
+    }
+
+    const eggMeshes = Array.from({ length: SIZE * SIZE }, (_, index) => createEgg(index));
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+
+    class RippleSimulation {
+      constructor() { this.reset(); this.speed = 3; this.damping = .72; this.duration = 900; }
+      reset() {
+        this.time = 0;
+        this.events = [];
+        this.eggs = Array.from({ length: SIZE * SIZE }, (_, index) => ({ index, amplitude: 0, started: -1, until: -1, count: 0 }));
+      }
+      push(row, col, strength, time = this.time) {
+        for (let targetRow = 0; targetRow < SIZE; targetRow++) {
+          for (let targetCol = 0; targetCol < SIZE; targetCol++) {
+            const distance = Math.abs(targetRow - row) + Math.abs(targetCol - col);
+            this.events.push({
+              arrival: time + distance / this.speed * 1000,
+              index: targetRow * SIZE + targetCol,
+              amplitude: strength * this.damping ** distance,
+            });
+          }
+        }
+        this.events.sort((a, b) => a.arrival - b.arrival);
+      }
+      advance(time) {
+        this.time = Math.max(this.time, time);
+        while (this.events.length && this.events[0].arrival <= this.time) {
+          const event = this.events.shift();
+          const egg = this.eggs[event.index];
+          egg.amplitude = Math.max(egg.amplitude, event.amplitude);
+          egg.started = event.arrival;
+          egg.until = event.arrival + this.duration;
+          egg.count++;
+        }
+      }
+    }
+
+    const sim = new RippleSimulation();
+    let paused = false;
+    let pausedAt = 0;
+    let demoRunning = false;
+    let demoStart = 0;
+    let lastFrame = performance.now();
+
+    function pushEgg(index, strength = Number(document.querySelector('#strength').value)) {
+      const row = Math.floor(index / SIZE);
+      const col = index % SIZE;
+      sim.push(row, col, strength);
+    }
+    function reset() {
+      sim.reset();
+      demoRunning = false;
+      paused = false;
+      document.querySelector('#pause').textContent = 'Pause';
+      updateText();
+    }
+    function startDemo() {
+      reset();
+      demoRunning = true;
+      demoStart = sim.time;
+      pushEgg(CENTER * SIZE + CENTER, .95);
+    }
+    function updateText() {
+      const active = sim.eggs.filter(egg => egg.until >= sim.time).length;
+      const arrived = sim.eggs.filter(egg => egg.started >= 0 && egg.started <= sim.time);
+      document.querySelector('#timeValue').textContent = `${(sim.time / 1000).toFixed(2)} s`;
+      document.querySelector('#activeValue').textContent = `${active} / 25`;
+      document.querySelector('#frontValue').textContent = arrived.length ? `${arrived.length} / 25 eggs` : '—';
+      document.querySelector('#status span').textContent = paused ? 'Paused' : (demoRunning ? 'Demo playback' : 'Running');
+      document.querySelector('#status').classList.toggle('paused', paused);
+    }
+    function updateMeshes() {
+      sim.eggs.forEach((egg, index) => {
+        const mesh = eggMeshes[index];
+        const active = egg.until >= sim.time && egg.started >= 0;
+        const phase = active ? (sim.time - egg.started) / 1000 * Math.PI * 5.2 : 0;
+        const fade = active ? Math.max(0, 1 - (sim.time - egg.started) / sim.duration) : 0;
+        const wobble = egg.amplitude * fade;
+        const row = Math.floor(index / SIZE), col = index % SIZE;
+        mesh.rotation.x = Math.sin(phase + row * .6) * wobble * .28;
+        mesh.rotation.z = Math.cos(phase * .93 + col * .4) * wobble * .28;
+        mesh.position.y = 1.02 + Math.abs(Math.sin(phase)) * wobble * .10;
+        mesh.scale.setScalar(1 + wobble * .06);
+        mesh.material.emissiveIntensity = index === CENTER * SIZE + CENTER ? .48 + wobble * .8 : .18 + wobble * .95;
+        mesh.material.color.setHSL(index === CENTER * SIZE + CENTER ? .09 : .53 + wobble * .05, .65, .55 + wobble * .12);
+      });
+    }
+    function tickDemo() {
+      if (!demoRunning) return;
+      const elapsed = sim.time - demoStart;
+      if (elapsed > 1350 && elapsed < 1400) pushEgg(1 * SIZE + 1, .72);
+      if (elapsed > 2700 && elapsed < 2750) pushEgg(3 * SIZE + 3, .64);
+      if (elapsed > 4500) demoRunning = false;
+    }
+    function animate(now) {
+      requestAnimationFrame(animate);
+      const dt = Math.min(50, now - lastFrame);
+      lastFrame = now;
+      if (!paused) {
+        sim.advance(sim.time + dt);
+        tickDemo();
+      }
+      updateMeshes();
+      updateText();
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    function resize() {
+      const width = sceneHost.clientWidth, height = sceneHost.clientHeight;
+      camera.aspect = width / Math.max(height, 1);
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height, false);
+    }
+    function addPad(index) {
+      const button = document.createElement('button');
+      button.className = `pad${index === CENTER * SIZE + CENTER ? ' center' : ''}`;
+      button.textContent = `${Math.floor(index / SIZE) + 1},${index % SIZE + 1}`;
+      button.title = `Push egg at row ${Math.floor(index / SIZE) + 1}, column ${index % SIZE + 1}`;
+      button.addEventListener('click', () => pushEgg(index));
+      document.querySelector('#pads').appendChild(button);
+    }
+    eggMeshes.forEach((mesh, index) => addPad(index));
+    document.querySelector('#pushCenter').addEventListener('click', () => pushEgg(CENTER * SIZE + CENTER));
+    document.querySelector('#demo').addEventListener('click', startDemo);
+    document.querySelector('#reset').addEventListener('click', reset);
+    document.querySelector('#pause').addEventListener('click', event => {
+      paused = !paused;
+      event.currentTarget.textContent = paused ? 'Resume' : 'Pause';
+    });
+    document.querySelector('#step').addEventListener('click', () => {
+      paused = true;
+      document.querySelector('#pause').textContent = 'Resume';
+      sim.advance(sim.time + 100);
+    });
+    document.querySelector('#speed').addEventListener('input', event => { sim.speed = Number(event.target.value); document.querySelector('#speedValue').textContent = `${sim.speed.toFixed(1)} cells/s`; });
+    document.querySelector('#damping').addEventListener('input', event => { sim.damping = Number(event.target.value); document.querySelector('#dampingValue').textContent = `${sim.damping.toFixed(2)}×`; });
+    document.querySelector('#strength').addEventListener('input', event => { document.querySelector('#strengthValue').textContent = Number(event.target.value).toFixed(2); });
+    renderer.domElement.addEventListener('pointerdown', event => {
+      const rect = renderer.domElement.getBoundingClientRect();
+      pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(pointer, camera);
+      const hit = raycaster.intersectObjects(eggMeshes)[0];
+      if (hit) pushEgg(hit.object.userData.index);
+    });
+    window.addEventListener('resize', resize);
+    resize();
+    animate(performance.now());
+  </script>
+</body>
+</html>

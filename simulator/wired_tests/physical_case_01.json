@@ -1,0 +1,85 @@
+{
+  "test": "wired_egg_physical_characterization",
+  "dashboard_url": "http://127.0.0.1:8080",
+  "limits_from_initial_state": {
+    "max_rpm": 240.0,
+    "max_accel_rpm_s": 120.0,
+    "min_rpm": 1.0,
+    "min_accel_rpm_s": 1.0,
+    "max_step_rate": 15000.0
+  },
+  "runs": [
+    {
+      "name": "finite_low_speed",
+      "command": {
+        "cmd": "run",
+        "rpm": 3,
+        "accel": 20,
+        "distance_rev": 0.05,
+        "direction": 1
+      },
+      "started_host_time": 0.293375541,
+      "stop_command_host_time": null,
+      "stopped_host_time": 0.295427791,
+      "stop_latency_s": null,
+      "sample_count": 1,
+      "observed": {
+        "heading": {
+          "min": 0.0,
+          "max": 0.0,
+          "peak_abs": 0.0
+        },
+        "roll": {
+          "min": 0.0,
+          "max": 0.0,
+          "peak_abs": 0.0
+        },
+        "pitch": {
+          "min": 0.0,
+          "max": 0.0,
+          "peak_abs": 0.0
+        },
+        "gyro_vector_dps": {
+          "peak_abs": 0.31888555940964153
+        },
+        "temperature_c": {
+          "min": 31.0,
+          "max": 31.0
+        }
+      },
+      "samples": [
+        {
+          "host_time": 0.295427791,
+          "sample_seq": 53434,
+          "imu": {
+            "heading": 0.0,
+            "roll": 0.0,
+            "pitch": 0.0,
+            "gyro": {
+              "x": -0.188,
+              "y": 0.25,
+              "z": 0.062
+            },
+            "temperature_c": 31.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 3
+            }
+          },
+          "motor": {
+            "running": false,
+            "mode": "idle",
+            "rpm": 0.0,
+            "target_rpm": 0.0,
+            "position_steps": 0,
+            "distance_rev": 0.0,
+            "direction": 1,
+            "estopped": false
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1270 @@
+{
+  "test": "wired_egg_physical_characterization",
+  "dashboard_url": "http://127.0.0.1:8080",
+  "limits_from_initial_state": {
+    "max_rpm": 240.0,
+    "max_accel_rpm_s": 120.0,
+    "min_rpm": 1.0,
+    "min_accel_rpm_s": 1.0,
+    "max_step_rate": 15000.0
+  },
+  "runs": [
+    {
+      "name": "reverse_while_sustaining",
+      "command": {
+        "cmd": "rock",
+        "rpm": 8,
+        "accel": 30,
+        "amplitude_rev": 0.08,
+        "cycles": 0
+      },
+      "reverse_command": {
+        "cmd": "set",
+        "rpm": 8,
+        "accel": 30,
+        "direction": -1
+      },
+      "started_host_time": 0.259578083,
+      "reverse_host_time": 1.295040083,
+      "stop_command_host_time": 2.316543958,
+      "stopped_host_time": 2.429199791,
+      "stop_latency_s": 0.11265583299999982,
+      "sample_count": 39,
+      "observed": {
+        "heading": {
+          "min": -0.6239929,
+          "max": 0.1880035,
+          "peak_abs": 0.6239929
+        },
+        "roll": {
+          "min": -1.313004,
+          "max": 0.6869965,
+          "peak_abs": 1.313004
+        },
+        "pitch": {
+          "min": -1.062,
+          "max": 0.1259995,
+          "peak_abs": 1.062
+        },
+        "gyro_vector_dps": {
+          "peak_abs": 12.810426690785908
+        },
+        "temperature_c": {
+          "min": 31.0,
+          "max": 32.0
+        }
+      },
+      "samples": [
+        {
+          "host_time": 0.262451083,
+          "sample_seq": 189437,
+          "imu": {
+            "heading": 0.0,
+            "roll": 0.0,
+            "pitch": 0.0,
+            "gyro": {
+              "x": -0.125,
+              "y": 0.062,
+              "z": 0.062
+            },
+            "temperature_c": 31.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": false,
+            "mode": "idle",
+            "rpm": 0.0,
+            "target_rpm": 0.0,
+            "position_steps": -3200,
+            "distance_rev": 1.0,
+            "direction": -1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 0.319377333,
+          "sample_seq": 189438,
+          "imu": {
+            "heading": 0.0,
+            "roll": 0.0,
+            "pitch": 0.0,
+            "gyro": {
+              "x": -0.062,
+              "y": -0.125,
+              "z": 0.062
+            },
+            "temperature_c": 32.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": false,
+            "mode": "idle",
+            "rpm": 0.0,
+            "target_rpm": 0.0,
+            "position_steps": -3200,
+            "distance_rev": 1.0,
+            "direction": -1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 0.376923541,
+          "sample_seq": 189438,
+          "imu": {
+            "heading": 0.0,
+            "roll": 0.0,
+            "pitch": 0.0,
+            "gyro": {
+              "x": -0.062,
+              "y": -0.125,
+              "z": 0.062
+            },
+            "temperature_c": 32.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 1.0,
+            "target_rpm": 8.0,
+            "position_steps": 0,
+            "distance_rev": 0.0,
+            "direction": 1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 0.434760916,
+          "sample_seq": 189439,
+          "imu": {
+            "heading": 0.0,
+            "roll": 0.06199646,
+            "pitch": 0.0,
+            "gyro": {
+              "x": -0.375,
+              "y": -1.875,
+              "z": -1.188
+            },
+            "temperature_c": 32.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 1.0,
+            "target_rpm": 8.0,
+            "position_steps": 0,
+            "distance_rev": 0.0,
+            "direction": 1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 0.490928,
+          "sample_seq": 189440,
+          "imu": {
+            "heading": 0.06300354,
+            "roll": 0.06199646,
+            "pitch": -0.06200027,
+            "gyro": {
+              "x": 1.062,
+              "y": -0.125,
+              "z": -0.625
+            },
+            "temperature_c": 32.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 3.96562,
+            "target_rpm": 8.0,
+            "position_steps": 20,
+            "distance_rev": 0.00625,
+            "direction": 1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 0.544239958,
+          "sample_seq": 189441,
+          "imu": {
+            "heading": 0.06300354,
+            "roll": 0.06199646,
+            "pitch": 0.0,
+            "gyro": {
+              "x": 1.688,
+              "y": 0.938,
+              "z": 0.875
+            },
+            "temperature_c": 32.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 6.06604,
+            "target_rpm": 8.0,
+            "position_steps": 43,
+            "distance_rev": 0.0134375,
+            "direction": 1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 0.601997,
+          "sample_seq": 189442,
+          "imu": {
+            "heading": 0.1260071,
+            "roll": 0.06199646,
+            "pitch": 0.06299973,
+            "gyro": {
+              "x": 0.688,
+              "y": -0.5,
+              "z": -0.125
+            },
+            "temperature_c": 32.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": 73,
+            "distance_rev": 0.0228125,
+            "direction": 1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 0.659428083,
+          "sample_seq": 189442,
+          "imu": {
+            "heading": 0.1260071,
+            "roll": 0.06199646,
+            "pitch": 0.06299973,
+            "gyro": {
+              "x": 0.688,
+              "y": -0.5,
+              "z": -0.125
+            },
+            "temperature_c": 32.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": 73,
+            "distance_rev": 0.0228125,
+            "direction": 1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 0.712923,
+          "sample_seq": 189443,
+          "imu": {
+            "heading": 0.1880035,
+            "roll": 0.06199646,
+            "pitch": 0.06299973,
+            "gyro": {
+              "x": 1.125,
+              "y": -0.75,
+              "z": -0.125
+            },
+            "temperature_c": 32.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": 103,
+            "distance_rev": 0.0321875,
+            "direction": 1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 0.769527458,
+          "sample_seq": 189444,
+          "imu": {
+            "heading": 0.1260071,
+            "roll": 0.06199646,
+            "pitch": 0.1259995,
+            "gyro": {
+              "x": 1.188,
+              "y": 0.188,
+              "z": -0.062
+            },
+            "temperature_c": 32.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": 133,
+            "distance_rev": 0.0415625,
+            "direction": 1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 0.828639333,
+          "sample_seq": 189445,
+          "imu": {
+            "heading": 0.1260071,
+            "roll": 0.25,
+            "pitch": 0.0,
+            "gyro": {
+              "x": -1.375,
+              "y": -2.375,
+              "z": -2.75
+            },
+            "temperature_c": 32.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": 163,
+            "distance_rev": 0.0509375,
+            "direction": 1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 0.887247625,
+          "sample_seq": 189446,
+          "imu": {
+            "heading": 0.1880035,
+            "roll": 0.4369965,
+            "pitch": 0.0,
+            "gyro": {
+              "x": -1.438,
+              "y": -0.5,
+              "z": 4.25
+            },
+            "temperature_c": 32.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": 192,
+            "distance_rev": 0.06,
+            "direction": 1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 0.946577541,
+          "sample_seq": 189447,
+          "imu": {
+            "heading": 0.1880035,
+            "roll": 0.5,
+            "pitch": -0.06200027,
+            "gyro": {
+              "x": -0.188,
+              "y": 0.062,
+              "z": 0.375
+            },
+            "temperature_c": 32.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": 222,
+            "distance_rev": 0.069375,
+            "direction": 1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 1.005859083,
+          "sample_seq": 189447,
+          "imu": {
+            "heading": 0.1880035,
+            "roll": 0.5,
+            "pitch": -0.06200027,
+            "gyro": {
+              "x": -0.188,
+              "y": 0.062,
+              "z": 0.375
+            },
+            "temperature_c": 32.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": 222,
+            "distance_rev": 0.069375,
+            "direction": 1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 1.066730291,
+          "sample_seq": 189448,
+          "imu": {
+            "heading": 0.06300354,
+            "roll": 0.5,
+            "pitch": -0.1240005,
+            "gyro": {
+              "x": -0.938,
+              "y": 1.0,
+              "z": 0.938
+            },
+            "temperature_c": 32.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": 252,
+            "distance_rev": 0.07875,
+            "direction": 1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 1.124804333,
+          "sample_seq": 189449,
+          "imu": {
+            "heading": 0.06300354,
+            "roll": 0.5,
+            "pitch": -0.1240005,
+            "gyro": {
+              "x": -0.062,
+              "y": -0.312,
+              "z": -0.062
+            },
+            "temperature_c": 32.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": 229,
+            "distance_rev": 0.0715625,
+            "direction": -1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 1.177983,
+          "sample_seq": 189450,
+          "imu": {
+            "heading": -0.4369965,
+            "roll": 0.4369965,
+            "pitch": 0.1259995,
+            "gyro": {
+              "x": -6.562,
+              "y": -3.312,
+              "z": 1.938
+            },
+            "temperature_c": 32.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": 199,
+            "distance_rev": 0.0621875,
+            "direction": -1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 1.236369583,
+          "sample_seq": 189451,
+          "imu": {
+            "heading": -0.4369965,
+            "roll": 0.6869965,
+            "pitch": -0.3740005,
+            "gyro": {
+              "x": -3.312,
+              "y": 1.062,
+              "z": -7.188
+            },
+            "temperature_c": 32.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": 169,
+            "distance_rev": 0.0528125,
+            "direction": -1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 1.299824875,
+          "sample_seq": 189452,
+          "imu": {
+            "heading": -0.6239929,
+            "roll": 0.4369965,
+            "pitch": -0.3740005,
+            "gyro": {
+              "x": -1.25,
+              "y": 0.438,
+              "z": 9.312
+            },
+            "temperature_c": 31.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": 139,
+            "distance_rev": 0.0434375,
+            "direction": -1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 1.35850225,
+          "sample_seq": 189452,
+          "imu": {
+            "heading": -0.6239929,
+            "roll": 0.4369965,
+            "pitch": -0.3740005,
+            "gyro": {
+              "x": -1.25,
+              "y": 0.438,
+              "z": 9.312
+            },
+            "temperature_c": 31.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": 139,
+            "distance_rev": 0.0434375,
+            "direction": -1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 1.416268125,
+          "sample_seq": 189453,
+          "imu": {
+            "heading": -0.5,
+            "roll": 0.5,
+            "pitch": -0.3740005,
+            "gyro": {
+              "x": 3.062,
+              "y": -0.562,
+              "z": -7.0
+            },
+            "temperature_c": 31.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": 84,
+            "distance_rev": 0.02625,
+            "direction": -1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 1.473710666,
+          "sample_seq": 189454,
+          "imu": {
+            "heading": -0.3739929,
+            "roll": 0.4369965,
+            "pitch": -0.1870003,
+            "gyro": {
+              "x": 2.438,
+              "y": 0.625,
+              "z": 2.312
+            },
+            "temperature_c": 31.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": 84,
+            "distance_rev": 0.02625,
+            "direction": -1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 1.529827041,
+          "sample_seq": 189454,
+          "imu": {
+            "heading": -0.3739929,
+            "roll": 0.4369965,
+            "pitch": -0.1870003,
+            "gyro": {
+              "x": 2.438,
+              "y": 0.625,
+              "z": 2.312
+            },
+            "temperature_c": 31.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": 84,
+            "distance_rev": 0.02625,
+            "direction": -1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 1.58782575,
+          "sample_seq": 189455,
+          "imu": {
+            "heading": -0.25,
+            "roll": 0.4369965,
+            "pitch": -0.1240005,
+            "gyro": {
+              "x": 1.125,
+              "y": 1.25,
+              "z": -0.25
+            },
+            "temperature_c": 31.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": 37,
+            "distance_rev": 0.0115625,
+            "direction": -1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 1.643728625,
+          "sample_seq": 189456,
+          "imu": {
+            "heading": -0.1869965,
+            "roll": 0.4369965,
+            "pitch": -0.4370003,
+            "gyro": {
+              "x": -2.375,
+              "y": 2.875,
+              "z": 3.875
+            },
+            "temperature_c": 31.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": 7,
+            "distance_rev": 0.0021875,
+            "direction": -1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 1.70078375,
+          "sample_seq": 189457,
+          "imu": {
+            "heading": -0.4369965,
+            "roll": 0.1239929,
+            "pitch": -0.4370003,
+            "gyro": {
+              "x": 0.625,
+              "y": 0.562,
+              "z": 0.625
+            },
+            "temperature_c": 31.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": -22,
+            "distance_rev": 0.006875,
+            "direction": -1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 1.756582333,
+          "sample_seq": 189458,
+          "imu": {
+            "heading": -0.3739929,
+            "roll": 0.1869965,
+            "pitch": -0.5620003,
+            "gyro": {
+              "x": 0.312,
+              "y": 0.125,
+              "z": -2.875
+            },
+            "temperature_c": 31.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": -52,
+            "distance_rev": 0.01625,
+            "direction": -1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 1.812052333,
+          "sample_seq": 189458,
+          "imu": {
+            "heading": -0.3739929,
+            "roll": 0.1869965,
+            "pitch": -0.5620003,
+            "gyro": {
+              "x": 0.312,
+              "y": 0.125,
+              "z": -2.875
+            },
+            "temperature_c": 31.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": -52,
+            "distance_rev": 0.01625,
+            "direction": -1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 1.865689833,
+          "sample_seq": 189459,
+          "imu": {
+            "heading": -0.25,
+            "roll": 0.25,
+            "pitch": -0.6240005,
+            "gyro": {
+              "x": 0.812,
+              "y": 0.25,
+              "z": 1.625
+            },
+            "temperature_c": 31.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": -81,
+            "distance_rev": 0.0253125,
+            "direction": -1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 1.922517125,
+          "sample_seq": 189460,
+          "imu": {
+            "heading": -0.3739929,
+            "roll": 0.1239929,
+            "pitch": -0.5620003,
+            "gyro": {
+              "x": -0.5,
+              "y": -0.562,
+              "z": 0.938
+            },
+            "temperature_c": 31.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": -111,
+            "distance_rev": 0.0346875,
+            "direction": -1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 1.976912416,
+          "sample_seq": 189461,
+          "imu": {
+            "heading": -0.3739929,
+            "roll": 0.1239929,
+            "pitch": -0.6240005,
+            "gyro": {
+              "x": -0.25,
+              "y": 0.438,
+              "z": -0.25
+            },
+            "temperature_c": 31.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": -141,
+            "distance_rev": 0.0440625,
+            "direction": -1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 2.034200541,
+          "sample_seq": 189462,
+          "imu": {
+            "heading": -0.3739929,
+            "roll": 0.0,
+            "pitch": -0.8740005,
+            "gyro": {
+              "x": 0.5,
+              "y": 1.812,
+              "z": 1.375
+            },
+            "temperature_c": 31.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": -171,
+            "distance_rev": 0.0534375,
+            "direction": -1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 2.090031083,
+          "sample_seq": 189462,
+          "imu": {
+            "heading": -0.3739929,
+            "roll": 0.0,
+            "pitch": -0.8740005,
+            "gyro": {
+              "x": 0.5,
+              "y": 1.812,
+              "z": 1.375
+            },
+            "temperature_c": 31.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": -171,
+            "distance_rev": 0.0534375,
+            "direction": -1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 2.143386291,
+          "sample_seq": 189463,
+          "imu": {
+            "heading": -0.4369965,
+            "roll": -0.1260071,
+            "pitch": -0.8740005,
+            "gyro": {
+              "x": 0.312,
+              "y": 1.188,
+              "z": 2.375
+            },
+            "temperature_c": 31.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": -201,
+            "distance_rev": 0.0628125,
+            "direction": -1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 2.201031458,
+          "sample_seq": 189464,
+          "imu": {
+            "heading": -0.3739929,
+            "roll": -0.1260071,
+            "pitch": -0.8740005,
+            "gyro": {
+              "x": 0.438,
+              "y": 1.25,
+              "z": 1.875
+            },
+            "temperature_c": 31.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": -231,
+            "distance_rev": 0.0721875,
+            "direction": -1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 2.256391666,
+          "sample_seq": 189465,
+          "imu": {
+            "heading": -0.3119965,
+            "roll": -0.1880035,
+            "pitch": -0.9370003,
+            "gyro": {
+              "x": 2.125,
+              "y": 1.5,
+              "z": 0.562
+            },
+            "temperature_c": 31.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": -250,
+            "distance_rev": 0.078125,
+            "direction": 1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 2.316545166,
+          "sample_seq": 189466,
+          "imu": {
+            "heading": -0.06199646,
+            "roll": -0.5630035,
+            "pitch": -1.062,
+            "gyro": {
+              "x": 9.812,
+              "y": 6.938,
+              "z": 4.438
+            },
+            "temperature_c": 32.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": -220,
+            "distance_rev": 0.06875,
+            "direction": 1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 2.373967208,
+          "sample_seq": 189466,
+          "imu": {
+            "heading": -0.06199646,
+            "roll": -0.5630035,
+            "pitch": -1.062,
+            "gyro": {
+              "x": 9.812,
+              "y": 6.938,
+              "z": 4.438
+            },
+            "temperature_c": 32.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": true,
+            "mode": "rock",
+            "rpm": 8.0,
+            "target_rpm": 8.0,
+            "position_steps": -220,
+            "distance_rev": 0.06875,
+            "direction": 1,
+            "estopped": false
+          }
+        },
+        {
+          "host_time": 2.429199791,
+          "sample_seq": 189467,
+          "imu": {
+            "heading": -0.1239929,
+            "roll": -1.313004,
+            "pitch": -0.6870003,
+            "gyro": {
+              "x": 7.188,
+              "y": 6.5,
+              "z": 8.188
+            },
+            "temperature_c": 32.0,
+            "calibration": {
+              "sys": 0,
+              "accel": 3,
+              "gyro": 3,
+              "mag": 2
+            }
+          },
+          "motor": {
+            "running": false,
+            "mode": "idle",
+            "rpm": 0.0,
+            "target_rpm": 0.0,
+            "position_steps": -161,
+            "distance_rev": 0.0503125,
+            "direction": 1,
+            "estopped": false
+          }
+        }
+      ]
+    }
+  ]
+}

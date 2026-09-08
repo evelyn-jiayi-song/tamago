@@ -61,7 +61,7 @@
 <body>
   <main class="wrap">
     <header>
-      <div><div class="eyebrow">ESP32 / BNO055 / TMC2209</div><h1>Wobble motor deck</h1><p class="subtitle">Live orientation, motion command, and serial health.</p></div>
+      <div><div class="eyebrow">ESP32 / BNO055 / TMC2209</div><h1>Wobble motor deck</h1><p class="subtitle">Live orientation, motion command, and USB peer relay.</p></div>
       <div class="connection"><i class="dot" id="connectionDot"></i><span id="connectionText">Connecting…</span></div>
     </header>
 
@@ -120,6 +120,7 @@
         <h2>Connection</h2>
         <div class="status-line"><span>Serial port</span><span id="port">—</span></div>
         <div class="status-line"><span>Sensor</span><span id="sensor">—</span></div>
+        <div class="status-line"><span>Peer relay</span><span id="peer">—</span></div>
         <div class="status-line"><span>Last packet</span><span id="lastPacket">—</span></div>
         <div class="note">This page talks only to the local bridge at 127.0.0.1.</div>
       </article>
@@ -141,6 +142,7 @@
     async function command(cmd) {
       $('error').textContent = '';
       try {
+        if (window.selectedBoard) cmd = {...cmd, board: window.selectedBoard};
         const response = await fetch('/api/command', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(cmd) });
         const body = await response.json();
         if (!body.ok) $('error').textContent = body.error || 'Command failed';
@@ -168,26 +170,37 @@
       });
     }
     function render(state) {
+      const multi = state.boards && Object.keys(state.boards).length;
+      const boardId = multi ? (window.selectedBoard || Object.keys(state.boards)[0]) : null;
+      const board = multi ? state.boards[boardId] : state;
+      if (multi) {
+        window.selectedBoard = boardId;
+        $('connectionText').textContent = Object.entries(state.boards).map(([id, item]) => `${id}: ${item.connected ? 'connected' : 'offline'}`).join(' · ');
+      }
+      const stateForCommand = multi ? boardId : null;
       const imu = state.imu || {}, motor = state.motor || {};
+      const activeState = board;
+      const activeImu = activeState.imu || {}, activeMotor = activeState.motor || {};
       $('connectionDot').classList.toggle('good', !!state.connected);
-      $('connectionText').textContent = state.connected ? (state.sensor_found ? 'Connected / streaming' : 'ESP32 connected / IMU missing') : 'Disconnected';
-      $('heading').textContent = fixed(imu.heading, 1); $('roll').textContent = fixed(imu.roll, 1); $('pitch').textContent = fixed(imu.pitch, 1);
-      $('motorState').textContent = motor.estopped ? 'e-stop' : (motor.running ? 'running' : 'idle');
-      $('motorState').className = `pill ${motor.estopped ? 'bad' : (motor.running ? 'good' : '')}`;
-      $('motorRpm').textContent = `${fixed(motor.rpm, 0)} / ${fixed(motor.target_rpm, 0)} RPM`;
-      $('motorAccel').textContent = `${fixed(motor.accel_rpm_s, 0)} RPM/s`;
-      $('motorMode').textContent = motor.mode || 'idle';
-      $('travel').textContent = `${fixed(motor.distance_rev, 2)} rev`;
-      $('target').textContent = motor.target_steps ? `${fixed(motor.target_steps / (motor.steps_per_rev || 3200), 2)} rev` : (motor.amplitude_rev ? `±${fixed(motor.amplitude_rev, 2)} rev` : 'continuous');
-      const cal = imu.calibration;
+      if (!multi) $('connectionText').textContent = state.connected ? (state.sensor_found ? 'Connected / streaming' : 'ESP32 connected / IMU missing') : 'Disconnected';
+      $('heading').textContent = fixed(activeImu.heading, 1); $('roll').textContent = fixed(activeImu.roll, 1); $('pitch').textContent = fixed(activeImu.pitch, 1);
+      $('motorState').textContent = activeMotor.estopped ? 'e-stop' : (activeMotor.running ? 'running' : 'idle');
+      $('motorState').className = `pill ${activeMotor.estopped ? 'bad' : (activeMotor.running ? 'good' : '')}`;
+      $('motorRpm').textContent = `${fixed(activeMotor.rpm, 0)} / ${fixed(activeMotor.target_rpm, 0)} RPM`;
+      $('motorAccel').textContent = `${fixed(activeMotor.accel_rpm_s, 0)} RPM/s`;
+      $('motorMode').textContent = activeMotor.mode || 'idle';
+      $('travel').textContent = `${fixed(activeMotor.distance_rev, 2)} rev`;
+      $('target').textContent = activeMotor.target_steps ? `${fixed(activeMotor.target_steps / (activeMotor.steps_per_rev || 3200), 2)} rev` : (activeMotor.amplitude_rev ? `±${fixed(activeMotor.amplitude_rev, 2)} rev` : 'continuous');
+      const cal = activeImu.calibration;
       $('calibration').textContent = cal && typeof cal === 'object' ? `S${cal.sys} G${cal.gyro} A${cal.accel} M${cal.mag}` : '—';
-      $('accel').textContent = vec(imu.accel); $('gyro').textContent = vec(imu.gyro);
-      $('temperature').textContent = `${fixed(imu.temperature_c, 0)} °C`;
-      $('port').textContent = state.port || '—'; $('sensor').textContent = state.sensor || '—';
-      $('lastPacket').textContent = state.last_rx ? new Date(state.last_rx * 1000).toLocaleTimeString() : '—';
-      if (state.last_error) $('error').textContent = state.last_error;
-      const total = Number(motor.target_steps) || 0, current = Math.abs(Number(motor.position_steps) || 0);
-      $('progressBar').style.width = total ? `${Math.min(100, current / total * 100)}%` : (motor.running ? '100%' : '0%');
+      $('accel').textContent = vec(activeImu.accel); $('gyro').textContent = vec(activeImu.gyro);
+      $('temperature').textContent = `${fixed(activeImu.temperature_c, 0)} °C`;
+      $('port').textContent = activeState.port || '—'; $('sensor').textContent = activeState.sensor || '—';
+      $('peer').textContent = state.peer ? (state.peer.enabled ? 'enabled' : 'off') : '—';
+      $('lastPacket').textContent = activeState.last_rx ? new Date(activeState.last_rx * 1000).toLocaleTimeString() : '—';
+      if (activeState.last_error) $('error').textContent = activeState.last_error;
+      const total = Number(activeMotor.target_steps) || 0, current = Math.abs(Number(activeMotor.position_steps) || 0);
+      $('progressBar').style.width = total ? `${Math.min(100, current / total * 100)}%` : (activeMotor.running ? '100%' : '0%');
       drawChart();
     }
     function drawChart() {
@@ -202,11 +215,12 @@
       try {
         const r = await fetch(`/api/state?since=${lastSampleSeq}`, {cache:'no-store'});
         const state = await r.json();
-        (state.samples || []).forEach((sample) => {
+        const sampleState = state.boards ? state.boards[window.selectedBoard || Object.keys(state.boards)[0]] : state;
+        (sampleState.samples || []).forEach((sample) => {
           addSample(sample);
           lastSampleSeq = Math.max(lastSampleSeq, Number(sample.seq) || 0);
         });
-        if (!lastSampleSeq) addSample(state.imu || {});
+        if (!lastSampleSeq) addSample(sampleState.imu || {});
         render(state);
       } catch(e) { $('connectionText').textContent='Bridge unavailable'; $('connectionDot').classList.remove('good'); }
     }

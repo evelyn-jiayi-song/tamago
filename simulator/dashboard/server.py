@@ -28,6 +28,11 @@ except ImportError as exc:  # pragma: no cover - exercised on user machines
 
 
 DASHBOARD_DIR = Path(__file__).resolve().parent
+SIMULATOR_DIR = DASHBOARD_DIR.parent
+if str(SIMULATOR_DIR) not in __import__("sys").path:
+    __import__("sys").path.insert(0, str(SIMULATOR_DIR))
+
+from dual_board.ripple_logic import FollowerController, ReferencePublisher
 
 
 class SerialBridge:
@@ -209,6 +214,101 @@ class SerialBridge:
             self.serial.close()
 
 
+class MultiSerialBridge:
+    """USB bridge for two boards with optional laptop-relayed peer motion."""
+
+    def __init__(self, ports, baudrate=115200, peer_mode=False):
+        self.bridges = {
+            board_id: SerialBridge(port, baudrate)
+            for board_id, port in ports.items()
+        }
+        self.peer_mode = bool(peer_mode)
+        self.publishers = {
+            board_id: ReferencePublisher(source=board_id)
+            for board_id in self.bridges
+        }
+        self.followers = {}
+        board_ids = list(self.bridges)
+        if len(board_ids) == 2:
+            left, right = board_ids
+            self.followers[left] = FollowerController(source=right)
+            self.followers[right] = FollowerController(source=left)
+        self.peer_status = {
+            "enabled": self.peer_mode,
+            "delay_ms": 250,
+            "target_fraction": 0.5,
+            "last_commands": {},
+        }
+        self.stop_event = threading.Event()
+        self.peer_thread = threading.Thread(target=self._peer_loop, daemon=True)
+        self.peer_thread.start()
+
+    def _peer_loop(self):
+        while not self.stop_event.wait(0.05):
+            if not self.peer_mode or len(self.bridges) != 2:
+                continue
+            now_ms = int(time.monotonic() * 1000)
+            states = {
+                board_id: bridge.snapshot()
+                for board_id, bridge in self.bridges.items()
+            }
+            for board_id, state in states.items():
+                if state.get("connected"):
+                    packet = self.publishers[board_id].update(
+                        state.get("imu", {}), now_ms
+                    )
+                    if packet is not None:
+                        other_id = next(
+                            candidate for candidate in self.bridges
+                            if candidate != board_id
+                        )
+                        self.followers[other_id].receive(packet, now_ms)
+            commands = {}
+            for board_id, follower in self.followers.items():
+                command = follower.tick(now_ms)
+                if command is None or not states[board_id].get("connected"):
+                    continue
+                try:
+                    self.bridges[board_id].send(command)
+                    commands[board_id] = command
+                except Exception as exc:
+                    commands[board_id] = {"cmd": "error", "error": str(exc)}
+            self.peer_status = {
+                "enabled": True,
+                "delay_ms": 250,
+                "target_fraction": 0.5,
+                "last_commands": commands,
+                "followers": {
+                    board_id: follower.status(now_ms)
+                    for board_id, follower in self.followers.items()
+                },
+            }
+
+    def snapshot(self, since=0):
+        return {
+            "connected": all(
+                bridge.snapshot().get("connected")
+                for bridge in self.bridges.values()
+            ),
+            "boards": {
+                board_id: bridge.snapshot(since)
+                for board_id, bridge in self.bridges.items()
+            },
+            "peer": self.peer_status,
+        }
+
+    def send(self, command):
+        board_id = command.pop("board", next(iter(self.bridges)))
+        if board_id not in self.bridges:
+            raise ValueError("unknown board: {}".format(board_id))
+        self.bridges[board_id].send(command)
+
+    def close(self):
+        self.stop_event.set()
+        for bridge in self.bridges.values():
+            bridge.close()
+
+
 class DashboardHandler(BaseHTTPRequestHandler):
     bridge: SerialBridge | None = None
 
@@ -263,15 +363,25 @@ class DashboardHandler(BaseHTTPRequestHandler):
 
 def main():
     parser = argparse.ArgumentParser(description="ESP32 IMU/motor dashboard")
-    parser.add_argument("--port", default="/dev/cu.usbserial-020D143B",
-                        help="serial device path")
+    parser.add_argument("--port", action="append",
+                        help="serial device path; repeat for two boards")
     parser.add_argument("--baudrate", type=int, default=115200)
     parser.add_argument("--http-host", default="127.0.0.1")
     parser.add_argument("--http-port", type=int, default=8080)
     parser.add_argument("--dry-run", action="store_true", help="simulate device telemetry")
+    parser.add_argument("--peer-mode", action="store_true",
+                        help="relay filtered motion between two USB boards")
     args = parser.parse_args()
 
-    bridge = SerialBridge(args.port, args.baudrate, args.dry_run)
+    ports = args.port or ["/dev/cu.usbserial-020D143B"]
+    if args.dry_run or len(ports) == 1:
+        bridge = SerialBridge(ports[0], args.baudrate, args.dry_run)
+    else:
+        bridge = MultiSerialBridge(
+            {"egg-a": ports[0], "egg-b": ports[1]},
+            args.baudrate,
+            args.peer_mode,
+        )
     DashboardHandler.bridge = bridge
     server = ThreadingHTTPServer((args.http_host, args.http_port), DashboardHandler)
     print("Wobble dashboard: http://{}:{}/".format(args.http_host, args.http_port))

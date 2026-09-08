@@ -13,26 +13,44 @@ The ESP32 exposes:
 - `POST /api/command` for motion commands
 - `POST /api/heartbeat` for the motor safety watchdog
 
-The motor stops when a running board has not received a heartbeat for 750 ms.
+The motor stops when a r
+unning board has not received a heartbeat for 750 ms.
 
-## Configure Wi-Fi
+## Configure each ESP32
 
-Copy `firmware/wifi_secrets.py.example` to `firmware/wifi_secrets.py` and fill
-in the network credentials. The real secrets file is ignored by `.gitignore`.
+On each board, create `firmware/wifi_secrets.py` with the same laptop Wi-Fi
+credentials:
 
-The Wi-Fi firmware is a separate `main.py` copy. Do not upload it over the
-working USB firmware until the Wi-Fi path has been tested with the motor
-power disconnected.
+```python
+WIFI_SSID = "your-network-name"
+WIFI_PASSWORD = "your-network-password"
+```
+
+Upload `wifi_dashboard/firmware/main.py` and the maintained `firmware/bno055.py`
+driver to both boards. Start with motor power disconnected, and record the IP
+printed by each board. Both ESP32s and the laptop must be on the same 2.4 GHz
+network.
 
 ## Start the laptop dashboard
 
-After the ESP32 prints its IP address, run:
+After both ESP32s print their IP addresses, run:
 
 ```bash
-python3 wifi_dashboard/server.py --esp32-ip 192.168.1.123
+python3 wifi_dashboard/server.py \
+  --esp32-ip egg-a=192.168.1.123 \
+  --esp32-ip egg-b=192.168.1.124
 ```
 
 Open <http://127.0.0.1:8090>.
+
+The dashboard shows both IMU streams and routes commands to the selected egg.
+Enable **Peer mode** in the dashboard only after both boards are visible. The
+laptop then applies the existing peer-mode behavior: filtered motion from one
+egg reaches the other after 250 ms at 50% intensity. Disable peer mode before
+changing wiring or testing a motor mechanically.
+
+For a single-board check, one `--esp32-ip` is still supported. Bare addresses
+are named `egg1`, `egg2`, and so on.
 
 The current USB dashboard remains at <http://127.0.0.1:8080> and is not
 changed by this experiment.
