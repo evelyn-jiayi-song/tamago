@@ -54,7 +54,7 @@ class RippleLogicTests(unittest.TestCase):
         self.assertGreaterEqual(packet["intensity"], 0.0)
         self.assertLessEqual(packet["intensity"], 1.0)
 
-    def test_follower_applies_delay_and_half_intensity(self):
+    def test_follower_applies_delay_and_boosted_half_intensity(self):
         packet = {
             "v": 1, "kind": "motion", "source": "A", "seq": 7,
             "t_ms": 0, "intensity": 0.8, "active": True, "axis": "tilt",
@@ -65,8 +65,19 @@ class RippleLogicTests(unittest.TestCase):
         self.assertIsNone(follower.tick(349))
         command = follower.tick(350)
         self.assertEqual(command["cmd"], "rock")
-        self.assertAlmostEqual(command["intensity"], 0.4)
-        self.assertAlmostEqual(command["rpm"], 24.0)
+        self.assertAlmostEqual(command["intensity"], 0.5)
+        self.assertAlmostEqual(command["rpm"], 30.0)
+
+    def test_follower_response_gain_is_capped_by_target_fraction(self):
+        packet = {
+            "v": 1, "kind": "motion", "source": "A", "seq": 8,
+            "t_ms": 0, "intensity": 0.3, "active": True, "axis": "tilt",
+        }
+        follower = FollowerController(delay_ms=0, target_fraction=0.5)
+        self.assertTrue(follower.receive(packet, 0))
+        command = follower.tick(0)
+        self.assertAlmostEqual(command["intensity"], 0.3)
+        self.assertAlmostEqual(command["rpm"], 18.0)
 
     def test_stop_packet_is_delayed_and_stale_timeout_is_safe(self):
         follower = FollowerController(delay_ms=100, stale_timeout_ms=400)
@@ -97,4 +108,3 @@ class RippleLogicTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

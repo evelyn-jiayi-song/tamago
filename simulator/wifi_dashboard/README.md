@@ -29,7 +29,14 @@ WIFI_PASSWORD = "your-network-password"
 Upload `wifi_dashboard/firmware/main.py` and the maintained `firmware/bno055.py`
 driver to both boards. Start with motor power disconnected, and record the IP
 printed by each board. Both ESP32s and the laptop must be on the same 2.4 GHz
-network.
+network. For the original ESP32 (including TinyPICO ESP32-PICO-D4), configure
+the access point as **WPA2 Personal (AES) only**, not WPA2/WPA3 Personal
+transition mode. MicroPython's ESP32 `WLAN.connect()` exposes SSID, password,
+and optional BSSID only; it has no PMF (Protected Management Frames) setting.
+A transition-mode beacon can therefore be visible in `scan()` while
+association still fails when the AP selects the WPA3/PMF path. Change Apple
+Internet Sharing to its WPA2-only option, or use a separate WPA2-only 2.4 GHz
+access point, before diagnosing credentials or dashboard behavior.
 
 ## Start the laptop dashboard
 

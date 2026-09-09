@@ -54,6 +54,10 @@
     .error { color:var(--red); min-height:18px; margin-top:10px; font-size:12px; }
     .progress { height:8px; background:#0c1219; border-radius:99px; overflow:hidden; margin-top:12px; }
     .progress > div { height:100%; width:0; background:linear-gradient(90deg,var(--cyan),#99f6e4); transition:width .2s; }
+    .board-overview { grid-column:1 / -1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    .board-card { background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:14px; }
+    .board-card h3 { margin:0 0 10px; font-size:14px; display:flex; justify-content:space-between; }
+    .board-card .status-line { padding:6px 0; }
     @media (max-width:1000px) { .grid { grid-template-columns:1fr 1fr; } .wide { grid-column:span 2; } }
     @media (max-width:650px) { .wrap{padding:16px} header{display:block} .connection{margin-top:14px} .grid{display:block} .panel{margin-bottom:14px} }
   </style>
@@ -66,6 +70,10 @@
     </header>
 
     <section class="grid">
+      <article class="panel board-overview">
+        <div class="board-card" id="egg-a-overview"><h3>egg-a <span class="pill">waiting</span></h3><div class="status-line"><span>IMU</span><span>—</span></div><div class="status-line"><span>Motor</span><span>—</span></div></div>
+        <div class="board-card" id="egg-b-overview"><h3>egg-b <span class="pill">waiting</span></h3><div class="status-line"><span>IMU</span><span>—</span></div><div class="status-line"><span>Motor</span><span>—</span></div></div>
+      </article>
       <article class="panel">
         <h2>Motion command <span>step / dir</span></h2>
         <div class="controls">
@@ -118,9 +126,14 @@
 
       <article class="panel">
         <h2>Connection</h2>
+        <div class="field"><label for="boardSelect">Active egg</label><select id="boardSelect"></select></div>
+        <div class="actions"><button class="primary" id="peerToggle">Enable peer relay</button></div>
         <div class="status-line"><span>Serial port</span><span id="port">—</span></div>
         <div class="status-line"><span>Sensor</span><span id="sensor">—</span></div>
         <div class="status-line"><span>Peer relay</span><span id="peer">—</span></div>
+        <div class="status-line"><span>Peer source gyro</span><span id="sourceGyro">—</span></div>
+        <div class="status-line"><span>Dynamic acceleration</span><span id="sourceAccel">—</span></div>
+        <div class="status-line"><span>Detected motion</span><span id="sourceActive">—</span></div>
         <div class="status-line"><span>Last packet</span><span id="lastPacket">—</span></div>
         <div class="note">This page talks only to the local bridge at 127.0.0.1.</div>
       </article>
@@ -131,6 +144,12 @@
     const series = { heading: [], roll: [], pitch: [] }, maxPoints = 900;
     let lastSampleSeq = 0;
     let direction = 1;
+    let selectedBoard = null;
+    $('boardSelect').addEventListener('change', () => {
+      selectedBoard = $('boardSelect').value;
+      lastSampleSeq = 0;
+      series.heading.length = 0; series.roll.length = 0; series.pitch.length = 0;
+    });
     document.querySelectorAll('.dir').forEach((button) => button.addEventListener('click', () => {
       direction = Number(button.dataset.dir);
       document.querySelectorAll('.dir').forEach((b) => b.classList.toggle('active', b === button));
@@ -138,11 +157,25 @@
     $('rpm').addEventListener('input', () => $('rpmValue').textContent = $('rpm').value);
     $('accelCmd').addEventListener('input', () => $('accelValue').textContent = $('accelCmd').value);
     $('peerIntensity').addEventListener('input', () => $('peerIntensityValue').textContent = Number($('peerIntensity').value).toFixed(2));
+    $('peerIntensity').addEventListener('change', () => {
+      fetch('/api/peer', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({target_fraction: Number($('peerIntensity').value)})
+      }).catch((error) => $('error').textContent = error.message);
+    });
+    $('peerToggle').addEventListener('click', () => {
+      fetch('/api/peer', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({enabled: $('peerToggle').dataset.enabled !== 'true'})
+      }).catch((error) => $('error').textContent = error.message);
+    });
 
     async function command(cmd) {
       $('error').textContent = '';
       try {
-        if (window.selectedBoard) cmd = {...cmd, board: window.selectedBoard};
+        if (selectedBoard) cmd = {...cmd, board: selectedBoard};
         const response = await fetch('/api/command', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(cmd) });
         const body = await response.json();
         if (!body.ok) $('error').textContent = body.error || 'Command failed';
@@ -163,6 +196,18 @@
 
     function fixed(value, digits=2) { return Number.isFinite(Number(value)) ? Number(value).toFixed(digits) : '—'; }
     function vec(v) { return v ? `${fixed(v.x)} / ${fixed(v.y)} / ${fixed(v.z)}` : '—'; }
+    function renderOverview(id, board) {
+      const card = $(id + '-overview');
+      if (!card) return;
+      const imu = board.imu || {}, motor = board.motor || {};
+      const state = board.connected && board.last_rx ? 'streaming' : (board.connected ? 'connected / waiting' : 'offline');
+      const pillClass = state === 'streaming' ? 'pill good' : (state === 'offline' ? 'pill bad' : 'pill');
+      card.innerHTML = `<h3>${id} <span class="${pillClass}">${state}</span></h3>
+        <div class="status-line"><span>Heading / roll / pitch</span><span>${fixed(imu.heading,1)}° / ${fixed(imu.roll,1)}° / ${fixed(imu.pitch,1)}°</span></div>
+        <div class="status-line"><span>Gyro X / Y / Z</span><span>${vec(imu.gyro)} °/s</span></div>
+        <div class="status-line"><span>Motor</span><span>${motor.estopped ? 'e-stop' : (motor.running ? 'running' : 'idle')} · ${fixed(motor.rpm,0)} / ${fixed(motor.target_rpm,0)} RPM</span></div>
+        <div class="status-line"><span>Travel / pattern</span><span>${fixed(motor.distance_rev,2)} rev · ${motor.mode || 'idle'}</span></div>`;
+    }
     function addSample(sample) {
       ['heading','roll','pitch'].forEach((key) => {
         series[key].push(Number(sample[key]) || 0);
@@ -171,8 +216,15 @@
     }
     function render(state) {
       const multi = state.boards && Object.keys(state.boards).length;
-      const boardId = multi ? (window.selectedBoard || Object.keys(state.boards)[0]) : null;
+      const ids = multi ? Object.keys(state.boards) : [];
+      if (multi && (!selectedBoard || !ids.includes(selectedBoard))) selectedBoard = ids[0];
+      if (multi) {
+        $('boardSelect').innerHTML = ids.map((id) => `<option value="${id}">${id}</option>`).join('');
+        $('boardSelect').value = selectedBoard;
+      }
+      const boardId = multi ? selectedBoard : null;
       const board = multi ? state.boards[boardId] : state;
+      if (multi) ids.forEach((id) => renderOverview(id, state.boards[id]));
       if (multi) {
         window.selectedBoard = boardId;
         $('connectionText').textContent = Object.entries(state.boards).map(([id, item]) => `${id}: ${item.connected ? 'connected' : 'offline'}`).join(' · ');
@@ -197,6 +249,15 @@
       $('temperature').textContent = `${fixed(activeImu.temperature_c, 0)} °C`;
       $('port').textContent = activeState.port || '—'; $('sensor').textContent = activeState.sensor || '—';
       $('peer').textContent = state.peer ? (state.peer.enabled ? 'enabled' : 'off') : '—';
+      const sourceId = multi ? ids.find((id) => id !== boardId) : boardId;
+      const source = state.peer && state.peer.sources ? state.peer.sources[sourceId] : null;
+      $('sourceGyro').textContent = source ? `${fixed(source.gyro_dps, 1)} °/s` : '—';
+      $('sourceAccel').textContent = source ? `${fixed(source.dynamic_accel_mps2, 2)} m/s²` : '—';
+      $('sourceActive').textContent = source ? (source.active ? `yes (${fixed(source.intensity, 2)})` : 'no') : '—';
+      $('peerToggle').dataset.enabled = state.peer && state.peer.enabled ? 'true' : 'false';
+      $('peerToggle').textContent = state.peer && state.peer.enabled ? 'Disable peer relay' : 'Enable peer relay';
+      $('peerIntensity').value = state.peer ? Number(state.peer.target_fraction || 0.5) : 0.5;
+      $('peerIntensityValue').textContent = Number($('peerIntensity').value).toFixed(2);
       $('lastPacket').textContent = activeState.last_rx ? new Date(activeState.last_rx * 1000).toLocaleTimeString() : '—';
       if (activeState.last_error) $('error').textContent = activeState.last_error;
       const total = Number(activeMotor.target_steps) || 0, current = Math.abs(Number(activeMotor.position_steps) || 0);
@@ -215,7 +276,7 @@
       try {
         const r = await fetch(`/api/state?since=${lastSampleSeq}`, {cache:'no-store'});
         const state = await r.json();
-        const sampleState = state.boards ? state.boards[window.selectedBoard || Object.keys(state.boards)[0]] : state;
+        const sampleState = state.boards ? state.boards[selectedBoard || Object.keys(state.boards)[0]] : state;
         (sampleState.samples || []).forEach((sample) => {
           addSample(sample);
           lastSampleSeq = Math.max(lastSampleSeq, Number(sample.seq) || 0);

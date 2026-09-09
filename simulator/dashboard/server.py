@@ -32,7 +32,11 @@ SIMULATOR_DIR = DASHBOARD_DIR.parent
 if str(SIMULATOR_DIR) not in __import__("sys").path:
     __import__("sys").path.insert(0, str(SIMULATOR_DIR))
 
-from dual_board.ripple_logic import FollowerController, ReferencePublisher
+from dual_board.ripple_logic import (
+    FollowerController,
+    ReferencePublisher,
+    motion_features,
+)
 
 
 class SerialBridge:
@@ -237,11 +241,41 @@ class MultiSerialBridge:
             "enabled": self.peer_mode,
             "delay_ms": 250,
             "target_fraction": 0.5,
+            "source_response_gain": 2.0,
             "last_commands": {},
+            "sources": {},
         }
+        self.last_peer_commands = {}
+        self.last_peer_send_ms = {}
         self.stop_event = threading.Event()
         self.peer_thread = threading.Thread(target=self._peer_loop, daemon=True)
         self.peer_thread.start()
+
+    def set_peer(self, enabled=None, target_fraction=None):
+        was_enabled = self.peer_mode
+        if enabled is not None:
+            self.peer_mode = bool(enabled)
+        if target_fraction is not None:
+            fraction = float(target_fraction)
+            if not 0 <= fraction <= 1:
+                raise ValueError("target_fraction must be between 0 and 1")
+            for follower in self.followers.values():
+                follower.target_fraction = fraction
+        self.peer_status["enabled"] = self.peer_mode
+        self.peer_status["target_fraction"] = (
+            next(iter(self.followers.values())).target_fraction
+            if self.followers else 0.5
+        )
+        if was_enabled and not self.peer_mode:
+            for bridge in self.bridges.values():
+                try:
+                    bridge.send({"cmd": "stop"})
+                except Exception:
+                    pass
+            for follower in self.followers.values():
+                follower.last_command = None
+            self.peer_status["last_commands"] = {}
+        return self.peer_status
 
     def _peer_loop(self):
         while not self.stop_event.wait(0.05):
@@ -252,11 +286,27 @@ class MultiSerialBridge:
                 board_id: bridge.snapshot()
                 for board_id, bridge in self.bridges.items()
             }
+            sources = {}
             for board_id, state in states.items():
-                if state.get("connected"):
+                fresh = (
+                    state.get("connected")
+                    and state.get("last_rx") is not None
+                    and time.time() - state["last_rx"] < 0.5
+                )
+                if fresh:
+                    features = motion_features(state.get("imu", {}))
+                    publisher = self.publishers[board_id]
                     packet = self.publishers[board_id].update(
                         state.get("imu", {}), now_ms
                     )
+                    sources[board_id] = {
+                        "gyro_dps": round(features["gyro_dps"], 2),
+                        "dynamic_accel_mps2": round(
+                            features["dynamic_accel_mps2"], 2
+                        ),
+                        "intensity": round(publisher.filter.intensity, 3),
+                        "active": publisher.filter.active,
+                    }
                     if packet is not None:
                         other_id = next(
                             candidate for candidate in self.bridges
@@ -266,23 +316,58 @@ class MultiSerialBridge:
             commands = {}
             for board_id, follower in self.followers.items():
                 command = follower.tick(now_ms)
-                if command is None or not states[board_id].get("connected"):
+                target_fresh = (
+                    states[board_id].get("connected")
+                    and states[board_id].get("last_rx") is not None
+                    and time.time() - states[board_id]["last_rx"] < 0.5
+                )
+                if command is None or not target_fresh:
+                    continue
+                previous = self.last_peer_commands.get(board_id)
+                # The firmware starts a new ramp whenever it receives a
+                # ``rock`` command. Do not resend every filtered IMU packet:
+                # repeated starts keep the motor near its minimum RPM.
+                if (command.get("cmd") == "rock" and previous is not None and
+                        previous.get("cmd") == "rock"):
+                    commands[board_id] = previous
+                    continue
+                if (command.get("cmd") == "rock" and
+                        previous is not None and
+                        command.get("source_seq") != previous.get("source_seq") and
+                        now_ms - self.last_peer_send_ms.get(board_id, 0) < 120):
                     continue
                 try:
-                    self.bridges[board_id].send(command)
+                    outgoing = dict(command)
+                    # FollowerController already scales RPM/amplitude. The
+                    # existing firmware scales rock commands by intensity,
+                    # so use unity here to avoid applying the fraction twice.
+                    if outgoing.get("cmd") == "rock":
+                        outgoing["intensity"] = 1.0
+                    self.bridges[board_id].send(outgoing)
+                    self.last_peer_commands[board_id] = command
+                    self.last_peer_send_ms[board_id] = now_ms
                     commands[board_id] = command
                 except Exception as exc:
                     commands[board_id] = {"cmd": "error", "error": str(exc)}
             self.peer_status = {
-                "enabled": True,
+                "enabled": self.peer_mode,
                 "delay_ms": 250,
                 "target_fraction": 0.5,
+                "source_response_gain": (
+                    next(iter(self.followers.values())).source_response_gain
+                    if self.followers else 2.0
+                ),
                 "last_commands": commands,
+                "sources": sources,
                 "followers": {
                     board_id: follower.status(now_ms)
                     for board_id, follower in self.followers.items()
                 },
             }
+            if self.followers:
+                self.peer_status["target_fraction"] = next(
+                    iter(self.followers.values())
+                ).target_fraction
 
     def snapshot(self, since=0):
         return {
@@ -344,12 +429,19 @@ class DashboardHandler(BaseHTTPRequestHandler):
         self._send_json({"error": "not found"}, 404)
 
     def do_POST(self):  # noqa: N802
-        if self.path != "/api/command":
+        if self.path not in ("/api/command", "/api/peer"):
             self._send_json({"error": "not found"}, 404)
             return
         try:
             size = int(self.headers.get("Content-Length", "0"))
-            command = json.loads(self.rfile.read(size))
+            payload = json.loads(self.rfile.read(size))
+            if self.path == "/api/peer":
+                self._send_json(self.bridge.set_peer(
+                    enabled=payload.get("enabled"),
+                    target_fraction=payload.get("target_fraction"),
+                ))
+                return
+            command = payload
             if command.get("cmd") not in {"run", "set", "rock", "peer_rock", "start", "stop", "estop", "clear_estop", "tare", "status"}:
                 raise ValueError("unsupported command")
             self.bridge.send(command)

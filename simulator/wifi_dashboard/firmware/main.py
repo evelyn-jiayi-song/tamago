@@ -79,7 +79,7 @@ def connect_wifi():
             while not sta.isconnected() and time.ticks_diff(deadline, time.ticks_ms()) > 0:
                 time.sleep_ms(250)
         if not sta.isconnected():
-            return sta, "Wi-Fi connection timeout"
+            return sta, "Wi-Fi connection timeout (status {})".format(sta.status())
         return sta, ""
     except Exception as exc:
         return None, repr(exc)

@@ -25,6 +25,7 @@ DEFAULT_BASE_AMPLITUDE_REV = 0.25
 DEFAULT_MAX_RPM = 60.0
 DEFAULT_MAX_ACCEL_RPM_S = 30.0
 DEFAULT_MIN_EFFECTIVE_INTENSITY = 0.08
+DEFAULT_SOURCE_RESPONSE_GAIN = 2.0
 
 
 def clamp(value, low, high):
@@ -177,7 +178,8 @@ class FollowerController:
                  base_amplitude_rev=DEFAULT_BASE_AMPLITUDE_REV,
                  max_rpm=DEFAULT_MAX_RPM,
                  max_accel_rpm_s=DEFAULT_MAX_ACCEL_RPM_S,
-                 min_effective_intensity=DEFAULT_MIN_EFFECTIVE_INTENSITY):
+                 min_effective_intensity=DEFAULT_MIN_EFFECTIVE_INTENSITY,
+                 source_response_gain=DEFAULT_SOURCE_RESPONSE_GAIN):
         if not 0 <= target_fraction <= 1:
             raise ValueError("target_fraction must be between 0 and 1")
         if delay_ms < 0 or stale_timeout_ms <= 0:
@@ -191,6 +193,11 @@ class FollowerController:
         self.max_rpm = float(max_rpm)
         self.max_accel_rpm_s = float(max_accel_rpm_s)
         self.min_effective_intensity = float(min_effective_intensity)
+        if self.min_effective_intensity < 0:
+            raise ValueError("min_effective_intensity must be non-negative")
+        if source_response_gain <= 0:
+            raise ValueError("source_response_gain must be positive")
+        self.source_response_gain = float(source_response_gain)
         self.pending = []
         self.last_sequence = -1
         self.last_rx_ms = None
@@ -227,7 +234,14 @@ class FollowerController:
 
     def _command_for(self, packet):
         source_intensity = clamp(packet.get("intensity", 0.0), 0.0, 1.0)
-        effective = clamp(source_intensity * self.target_fraction, 0.0, 1.0)
+        # The IMU filter is intentionally conservative, so normal movement
+        # often occupies only the lower half of its 0..1 range. Expand that
+        # range before applying the user's target fraction; the clamp keeps
+        # the follower from exceeding the selected fraction at full motion.
+        normalized_source = clamp(
+            source_intensity * self.source_response_gain, 0.0, 1.0
+        )
+        effective = clamp(normalized_source * self.target_fraction, 0.0, 1.0)
         if packet.get("kind") == STOP_PACKET or effective < self.min_effective_intensity:
             return self._stop("peer_stop", int(packet["seq"]))
         return {
@@ -279,6 +293,6 @@ class FollowerController:
             "last_reason": self.last_reason,
             "delay_ms": self.delay_ms,
             "target_fraction": self.target_fraction,
+            "source_response_gain": self.source_response_gain,
             "stale_timeout_ms": self.stale_timeout_ms,
         }
-
