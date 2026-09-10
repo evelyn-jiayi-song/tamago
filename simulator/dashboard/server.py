@@ -68,8 +68,12 @@ class SerialBridge:
             "motor": {"running": False, "estopped": False, "rpm": 0, "target_rpm": 0,
                       "accel_rpm_s": 60, "mode": "idle",
                       "direction": 1, "position_steps": 0, "target_steps": 0,
+                      "absolute_position_steps": 0, "origin_steps": None,
+                      "origin_recorded": False,
                       "distance_rev": 0, "steps_per_rev": 3200,
                       "amplitude_rev": 0, "cycles": 0, "half_cycles": 0,
+                      "stable_tilt_deg": 0, "stable_max_tilt_deg": 15,
+                      "stable_rpm_limit": 0, "safety_stop_reason": "",
                       "intensity": 1.0,
                       "limits": {"min_rpm": 1, "max_rpm": 240,
                                  "min_accel_rpm_s": 1, "max_accel_rpm_s": 120,
@@ -195,7 +199,7 @@ class SerialBridge:
             if self.dry_run:
                 name = command.get("cmd")
                 motor = self.state["motor"]
-                if name in ("run", "set"):
+                if name in ("run", "smooth_run", "set"):
                     motor.update({"rpm": float(command.get("rpm", motor["rpm"])),
                                   "target_steps": int(float(command.get("distance_rev", 0)) * 3200),
                                   "direction": int(command.get("direction", 1))})
@@ -203,8 +207,28 @@ class SerialBridge:
                         motor["running"] = True
                 elif name == "stop":
                     motor["running"] = False
+                elif name == "set_origin":
+                    if motor["running"]:
+                        raise RuntimeError("stop the motor before recording origin")
+                    motor["origin_steps"] = motor.get("absolute_position_steps", 0)
+                    motor["origin_recorded"] = True
+                elif name == "return_origin":
+                    if not motor.get("origin_recorded"):
+                        raise RuntimeError("origin has not been recorded")
+                    if motor["running"]:
+                        raise RuntimeError("stop the motor before returning to origin")
+                    steps = int(round(
+                        (motor["origin_steps"] -
+                         motor.get("absolute_position_steps", 0)) % 3200
+                    ))
+                    motor.update({
+                        "running": steps > 0,
+                        "target_steps": steps,
+                        "direction": 1,
+                        "rpm": float(command.get("rpm", 10)),
+                    })
                 elif name == "estop":
-                    motor.update({"running": False, "estopped": True})
+                    motor.update({"running": False, "estopped": False})
                 elif name == "clear_estop":
                     motor["estopped"] = False
                 return
@@ -241,7 +265,7 @@ class MultiSerialBridge:
             "enabled": self.peer_mode,
             "delay_ms": 250,
             "target_fraction": 0.5,
-            "source_response_gain": 2.0,
+            "source_response_gain": 3.0,
             "last_commands": {},
             "sources": {},
         }
@@ -267,11 +291,6 @@ class MultiSerialBridge:
             if self.followers else 0.5
         )
         if was_enabled and not self.peer_mode:
-            for bridge in self.bridges.values():
-                try:
-                    bridge.send({"cmd": "stop"})
-                except Exception:
-                    pass
             for follower in self.followers.values():
                 follower.last_command = None
             self.peer_status["last_commands"] = {}
@@ -329,8 +348,13 @@ class MultiSerialBridge:
                 # repeated starts keep the motor near its minimum RPM.
                 if (command.get("cmd") == "rock" and previous is not None and
                         previous.get("cmd") == "rock"):
-                    commands[board_id] = previous
-                    continue
+                    intensity_delta = abs(
+                        float(command.get("intensity", 0.0)) -
+                        float(previous.get("intensity", 0.0))
+                    )
+                    if intensity_delta < 0.05:
+                        commands[board_id] = previous
+                        continue
                 if (command.get("cmd") == "rock" and
                         previous is not None and
                         command.get("source_seq") != previous.get("source_seq") and
@@ -355,7 +379,7 @@ class MultiSerialBridge:
                 "target_fraction": 0.5,
                 "source_response_gain": (
                     next(iter(self.followers.values())).source_response_gain
-                    if self.followers else 2.0
+                    if self.followers else 3.0
                 ),
                 "last_commands": commands,
                 "sources": sources,
@@ -442,7 +466,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
                 ))
                 return
             command = payload
-            if command.get("cmd") not in {"run", "set", "rock", "peer_rock", "start", "stop", "estop", "clear_estop", "tare", "status"}:
+            if command.get("cmd") not in {"run", "smooth_run", "set", "rock", "smooth_rock", "stable_rock", "peer_rock", "start", "stop", "estop", "clear_estop", "tare", "set_origin", "return_origin", "status"}:
                 raise ValueError("unsupported command")
             self.bridge.send(command)
             self._send_json({"ok": True, "state": self.bridge.snapshot()})
@@ -466,8 +490,15 @@ def main():
     args = parser.parse_args()
 
     ports = args.port or ["/dev/cu.usbserial-020D143B"]
-    if args.dry_run or len(ports) == 1:
+    if args.dry_run:
         bridge = SerialBridge(ports[0], args.baudrate, args.dry_run)
+    elif len(ports) == 1:
+        # Keep the two-egg UI shape when only one USB board is available.
+        bridge = MultiSerialBridge(
+            {"egg-b": ports[0]},
+            args.baudrate,
+            False,
+        )
     else:
         bridge = MultiSerialBridge(
             {"egg-a": ports[0], "egg-b": ports[1]},

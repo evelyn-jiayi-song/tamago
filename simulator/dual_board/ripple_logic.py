@@ -25,7 +25,7 @@ DEFAULT_BASE_AMPLITUDE_REV = 0.25
 DEFAULT_MAX_RPM = 60.0
 DEFAULT_MAX_ACCEL_RPM_S = 30.0
 DEFAULT_MIN_EFFECTIVE_INTENSITY = 0.08
-DEFAULT_SOURCE_RESPONSE_GAIN = 2.0
+DEFAULT_SOURCE_RESPONSE_GAIN = 3.0
 
 
 def clamp(value, low, high):
@@ -226,12 +226,6 @@ class FollowerController:
         return (abs(left.get("intensity", 0.0) - right.get("intensity", 0.0)) < 0.005 and
                 abs(left.get("rpm", 0.0) - right.get("rpm", 0.0)) < 0.5)
 
-    def _stop(self, reason, source_seq=None):
-        command = {"cmd": "stop", "reason": reason}
-        if source_seq is not None:
-            command["source_seq"] = source_seq
-        return command
-
     def _command_for(self, packet):
         source_intensity = clamp(packet.get("intensity", 0.0), 0.0, 1.0)
         # The IMU filter is intentionally conservative, so normal movement
@@ -243,7 +237,7 @@ class FollowerController:
         )
         effective = clamp(normalized_source * self.target_fraction, 0.0, 1.0)
         if packet.get("kind") == STOP_PACKET or effective < self.min_effective_intensity:
-            return self._stop("peer_stop", int(packet["seq"]))
+            return None
         return {
             "cmd": "rock",
             "source_seq": int(packet["seq"]),
@@ -270,11 +264,12 @@ class FollowerController:
         if self.last_rx_ms is None:
             command = None
         elif now_ms - self.last_rx_ms > self.stale_timeout_ms:
-            command = self._stop("peer_stale")
+            command = None
             self.last_reason = "peer_stale"
         elif due is not None:
             command = self._command_for(due)
-            self.last_reason = command.get("reason", "peer_motion")
+            if command is not None:
+                self.last_reason = command.get("reason", "peer_motion")
         else:
             command = None
 

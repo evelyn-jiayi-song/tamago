@@ -11,6 +11,7 @@ running a connected motor.
 """
 
 from machine import I2C, PWM, Pin
+import math
 import socket
 import time
 import sys
@@ -308,6 +309,9 @@ class Stepper:
     def start(self):
         self._begin_motion("run")
 
+    def start_smooth(self):
+        self._begin_motion("smooth_run")
+
     def start_rock(self, rpm, amplitude_rev, cycles=0, accel=None, intensity=1.0):
         self.configure(rpm=rpm, accel=accel)
         amplitude_rev = float(amplitude_rev)
@@ -346,11 +350,21 @@ class Stepper:
         if dt > 0.25:
             dt = 0.25
 
+        desired_rpm = self.target_rpm
+        if self.mode == "smooth_run" and self.target_steps:
+            remaining_steps = max(0.0, self.target_steps -
+                                  abs(self.position_float_steps))
+            braking_rpm = math.sqrt(
+                remaining_steps * 120.0 * self.accel_rpm_s /
+                self.steps_per_rev
+            )
+            desired_rpm = min(self.target_rpm, braking_rpm)
+
         change = self.accel_rpm_s * dt
-        if self.rpm < self.target_rpm:
-            self.rpm = min(self.target_rpm, self.rpm + change)
+        if self.rpm < desired_rpm:
+            self.rpm = min(desired_rpm, self.rpm + change)
         else:
-            self.rpm = max(self.target_rpm, self.rpm - change)
+            self.rpm = max(desired_rpm, self.rpm - change)
         frequency = max(1, int(round(self.rpm * self.steps_per_rev / 60.0)))
         if self.step_pwm is not None and frequency != self.step_pwm.freq():
             self.step_pwm.freq(frequency)
@@ -359,7 +373,7 @@ class Stepper:
         self.position_float_steps += self.direction * self.step_rate_hz * dt
         self.position_steps = int(self.position_float_steps)
 
-        if self.mode == "run" and self.target_steps:
+        if self.mode in ("run", "smooth_run") and self.target_steps:
             if abs(self.position_float_steps) >= self.target_steps:
                 self.position_steps = self.target_steps * self.direction
                 self.stop()
@@ -410,6 +424,12 @@ def apply_command(command, motor, imu, imu_offset):
                         command.get("direction", 1), command.get("accel"))
         if name == "run":
             motor.start()
+        return {"type": "ack", "cmd": name, "motor": motor.status()}
+    if name == "smooth_run":
+        motor.configure(command.get("rpm"),
+                        command.get("distance_rev", command.get("revolutions")),
+                        command.get("direction", 1), command.get("accel"))
+        motor.start_smooth()
         return {"type": "ack", "cmd": name, "motor": motor.status()}
     if name in ("rock", "peer_rock"):
         intensity = float(command.get("intensity", 1.0))

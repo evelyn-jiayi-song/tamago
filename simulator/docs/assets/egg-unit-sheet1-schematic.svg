@@ -1,0 +1,460 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2280 1320" width="2280" height="1320" font-family="ui-sans-serif, -apple-system, 'Helvetica Neue', Arial, sans-serif" xmlns:c2pa="http://c2pa.org/manifest"><metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYTo0ZTEzODJjNS1kM2IyLTRkZTktYjkyNy00Yjg4NDYxYjhiN2EAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaAvY5C0R/0Ooy51lKgATvWEAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDpjMWE2MWIyMC03YjA4LTQ4YTQtOGNkMC02ZWFhZTFhNTMzNzdscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNoVD03YR5fxxBivHXFTHIL9QAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFgge1z3J18EFfFTuuA4UQtiaR7QjZs//NdMvUtGM5uKjB2kZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaEhKoNibEQu794aoxHIKDJ4AAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRNAAAAAAAAAAAAAAAAAGRoYXNoWCB/YgY3A/AfRxnb3zoMP/PHkpEe7lR8Sx6n5L1kN2rIXGRuYW1lbmp1bWJmIG1hbmlmZXN0amV4Y2x1c2lvbnOBomVzdGFydBjqZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOjRlMTM4MmM1LWQzYjItNGRlOS1iOTI3LTRiODg0NjFiOGI3YS9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOjA0YmY3ZWIzLWQ2NTMtNGRjNy1hMmJhLTliOGM2NzEyMGQ4YnJjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCB7XPcnXwQV8VO64DhRC2JpHtCNmz/810y9S0Yzm4qMHaJjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFggYTTLDBwKxh0Uazy5digVLyr9xqCF+Y3Xlcq/AI6HB06iY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFggrh4GZqjeAAMXn4iGlw/sP5WqUVANQqVnQZcg8NJ2uuN0Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQEAkHmCTIoX0ypEUd4fRHqWRcXRYiQZQjiPsTYbj0WoPdF/pR/4piAsej+i3mNVIEH2DHVQXkcYQ3o9NKfstOxg=</c2pa:manifest></metadata>
+
+<!-- ============================================================
+     EGG UNIT — CONTROL & DRIVE SCHEMATIC   (Sheet 1 of 2)
+     Redrawn from hand sketch IMG_3484.
+     Layer/group ids are stable: edit by group in Illustrator,
+     Inkscape, Figma or any text editor.
+     ============================================================ -->
+
+<defs>
+  <pattern id="dotgrid" width="40" height="40" patternUnits="userSpaceOnUse">
+    <circle cx="20" cy="20" r="1.1" fill="#DBE0D8"/>
+  </pattern>
+  <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <line x1="0" y1="0" x2="0" y2="8" stroke="#C0392B" stroke-width="1.2" opacity="0.45"/>
+  </pattern>
+  <style>
+    .ink   { fill:#16181A; }
+    .dim   { fill:#6E736B; }
+    .body  { stroke:#16181A; stroke-width:2.6; fill:#FFFFFF; }
+    .pin   { stroke:#16181A; stroke-width:2.2; fill:none; }
+    .wire  { stroke-width:3.6; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+    .prop  { stroke-width:3.2; fill:none; stroke-dasharray:9 7; }
+    .pname { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; font-size:17px; fill:#16181A; }
+    .nname { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; font-size:15px; }
+    .refdes{ font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; font-size:23px; font-weight:700; fill:#16181A; }
+    .cap   { font-size:15px; fill:#6E736B; }
+    .note  { font-size:15px; fill:#2A2E29; }
+    .hdr   { font-size:15px; font-weight:700; fill:#16181A; letter-spacing:0.06em; }
+    .nc    { stroke:#9A9E96; stroke-width:2.4; }
+  </style>
+</defs>
+
+<rect width="2280" height="1320" fill="#F7F8F6"/>
+<rect x="60" y="120" width="2160" height="850" fill="url(#dotgrid)"/>
+
+<!-- ===== SHEET FRAME + HEADER ===== -->
+<g id="layer-frame">
+  <rect x="40" y="40" width="2200" height="1240" fill="none" stroke="#16181A" stroke-width="2.4"/>
+  <text x="72" y="88" class="ink" font-size="29" font-weight="700">Egg unit — control &amp; drive</text>
+  <text x="72" y="112" class="dim" font-size="15">Kinetic rocking module · NEMA 17 + TMC2209 + TinyPICO + BNO055 · redrawn from hand sketch IMG_3484</text>
+  <text x="2208" y="88" class="dim" font-size="15" text-anchor="end">Sheet 1 of 2 — schematic</text>
+  <text x="2208" y="112" class="dim" font-size="15" text-anchor="end">Sheet 2 — board floorplan</text>
+  <line x1="60" y1="978" x2="2220" y2="978" stroke="#16181A" stroke-width="1.6"/>
+</g>
+
+<!-- ===== M1  NEMA 17 ===== -->
+<g id="sym-M1-nema17">
+  <rect x="110" y="400" width="190" height="240" class="body"/>
+  <text x="110" y="386" class="refdes">M1</text>
+  <text x="110" y="664" class="cap">NEMA 17 · 2-phase bipolar</text>
+  <circle cx="170" cy="518" r="26" fill="none" stroke="#16181A" stroke-width="2.2"/>
+  <text x="170" y="526" class="pname" text-anchor="middle">M</text>
+
+  <line x1="300" y1="440" x2="340" y2="440" class="pin"/>
+  <line x1="300" y1="490" x2="340" y2="490" class="pin"/>
+  <line x1="300" y1="540" x2="340" y2="540" class="pin"/>
+  <line x1="300" y1="590" x2="340" y2="590" class="pin"/>
+  <text x="290" y="446" class="pname" text-anchor="end">2B</text>
+  <text x="290" y="496" class="pname" text-anchor="end">2A</text>
+  <text x="290" y="546" class="pname" text-anchor="end">1A</text>
+  <text x="290" y="596" class="pname" text-anchor="end">1B</text>
+
+  <!-- coil brackets -->
+  <path d="M 316,432 h 8 v 66 h -8" fill="none" stroke="#7B3FA0" stroke-width="1.8"/>
+  <text x="330" y="470" class="nname" fill="#7B3FA0">coil B</text>
+  <path d="M 316,532 h 8 v 66 h -8" fill="none" stroke="#1D6FB8" stroke-width="1.8"/>
+  <text x="330" y="570" class="nname" fill="#1D6FB8">coil A</text>
+
+  <g id="note-ref-1"><circle cx="130" cy="620" r="12" fill="#FFF6E5" stroke="#B9741A" stroke-width="1.6"/><text x="130" y="625" font-size="13" fill="#B9741A" text-anchor="middle">1</text></g>
+</g>
+
+<!-- ===== PS1  10 V SUPPLY ===== -->
+<g id="sym-PS1-supply">
+  <rect x="110" y="740" width="190" height="140" class="body"/>
+  <text x="110" y="726" class="refdes">PS1</text>
+  <text x="110" y="904" class="cap">10 V DC supply / barrel jack</text>
+  <line x1="300" y1="785" x2="340" y2="785" class="pin"/>
+  <line x1="300" y1="840" x2="340" y2="840" class="pin"/>
+  <text x="290" y="791" class="pname" text-anchor="end">V+</text>
+  <text x="290" y="846" class="pname" text-anchor="end">V−</text>
+  <g id="note-ref-8"><circle cx="278" cy="762" r="12" fill="#FFF6E5" stroke="#B9741A" stroke-width="1.6"/><text x="278" y="767" font-size="13" fill="#B9741A" text-anchor="middle">8</text></g>
+</g>
+
+<!-- ===== U1  TMC2209 ===== -->
+<g id="sym-U1-tmc2209">
+  <rect x="560" y="300" width="330" height="440" class="body"/>
+  <text x="560" y="286" class="refdes">U1</text>
+  <text x="560" y="764" class="cap">TMC2209 StepStick · step/dir mode</text>
+  <circle cx="725" cy="500" r="20" fill="none" stroke="#6E736B" stroke-width="2"/>
+  <line x1="725" y1="484" x2="725" y2="500" stroke="#6E736B" stroke-width="2"/>
+  <text x="725" y="546" class="nname" fill="#6E736B" text-anchor="middle">VREF pot</text>
+  <g id="note-ref-9"><circle cx="770" cy="500" r="12" fill="#FFF6E5" stroke="#B9741A" stroke-width="1.6"/><text x="770" y="505" font-size="13" fill="#B9741A" text-anchor="middle">9</text></g>
+
+  <!-- left pins -->
+  <line x1="520" y1="340" x2="560" y2="340" class="pin"/>
+  <line x1="520" y1="390" x2="560" y2="390" class="pin"/>
+  <line x1="520" y1="440" x2="560" y2="440" class="pin"/>
+  <line x1="520" y1="490" x2="560" y2="490" class="pin"/>
+  <line x1="520" y1="540" x2="560" y2="540" class="pin"/>
+  <line x1="520" y1="590" x2="560" y2="590" class="pin"/>
+  <line x1="520" y1="640" x2="560" y2="640" class="pin"/>
+  <line x1="520" y1="690" x2="560" y2="690" class="pin"/>
+  <text x="572" y="346" class="pname">GND</text>
+  <text x="572" y="396" class="pname">VDD</text>
+  <text x="572" y="446" class="pname">B2</text>
+  <text x="572" y="496" class="pname">B1</text>
+  <text x="572" y="546" class="pname">A1</text>
+  <text x="572" y="596" class="pname">A2</text>
+  <text x="572" y="646" class="pname">GND</text>
+  <text x="572" y="696" class="pname">VM</text>
+
+  <!-- right pins -->
+  <line x1="890" y1="340" x2="930" y2="340" class="pin"/>
+  <line x1="890" y1="390" x2="930" y2="390" class="pin"/>
+  <line x1="890" y1="440" x2="930" y2="440" class="pin"/>
+  <line x1="890" y1="490" x2="930" y2="490" class="pin"/>
+  <line x1="890" y1="540" x2="930" y2="540" class="pin"/>
+  <line x1="890" y1="590" x2="930" y2="590" class="pin"/>
+  <line x1="890" y1="640" x2="930" y2="640" class="pin"/>
+  <line x1="890" y1="690" x2="930" y2="690" class="pin"/>
+  <text x="878" y="346" class="pname" text-anchor="end">DIR</text>
+  <text x="878" y="396" class="pname" text-anchor="end">STEP</text>
+  <text x="878" y="446" class="pname" text-anchor="end">CLK</text>
+  <text x="878" y="496" class="pname" text-anchor="end">PDN_UART</text>
+  <text x="878" y="546" class="pname" text-anchor="end">PDN ?</text>
+  <text x="878" y="596" class="pname" text-anchor="end">MS2</text>
+  <text x="878" y="646" class="pname" text-anchor="end">MS1</text>
+  <text x="878" y="696" class="pname" text-anchor="end">EN</text>
+
+  <!-- no-connect marks -->
+  <g class="nc">
+    <line x1="923" y1="433" x2="937" y2="447"/><line x1="937" y1="433" x2="923" y2="447"/>
+    <line x1="923" y1="483" x2="937" y2="497"/><line x1="937" y1="483" x2="923" y2="497"/>
+    <line x1="923" y1="533" x2="937" y2="547"/><line x1="937" y1="533" x2="923" y2="547"/>
+    <line x1="923" y1="583" x2="937" y2="597"/><line x1="937" y1="583" x2="923" y2="597"/>
+    <line x1="923" y1="633" x2="937" y2="647"/><line x1="937" y1="633" x2="923" y2="647"/>
+  </g>
+  <g id="note-ref-4"><circle cx="906" cy="470" r="12" fill="#FFF6E5" stroke="#B9741A" stroke-width="1.6"/><text x="906" y="475" font-size="13" fill="#B9741A" text-anchor="middle">4</text></g>
+  <g id="note-ref-6"><circle cx="906" cy="520" r="12" fill="#FFF6E5" stroke="#B9741A" stroke-width="1.6"/><text x="906" y="525" font-size="13" fill="#B9741A" text-anchor="middle">6</text></g>
+  <g id="note-ref-5"><circle cx="906" cy="620" r="12" fill="#FFF6E5" stroke="#B9741A" stroke-width="1.6"/><text x="906" y="625" font-size="13" fill="#B9741A" text-anchor="middle">5</text></g>
+</g>
+
+<!-- ===== U2  TINYPICO (symbol mirrored: see caption) ===== -->
+<g id="sym-U2-tinypico">
+  <rect x="1220" y="330" width="360" height="560" class="body"/>
+  <text x="1220" y="316" class="refdes">U2</text>
+  <text x="1220" y="914" class="cap">TinyPICO · ESP32-PICO-D4</text>
+  <text x="1220" y="936" class="cap">Symbol mirrored for routing: left column = board’s RIGHT header (BAT…25),</text>
+  <text x="1220" y="956" class="cap">right column = board’s LEFT header (23…GND). Physical view on sheet 2.</text>
+
+  <!-- left column pins (board's right header) -->
+  <line x1="1160" y1="380" x2="1220" y2="380" class="pin"/>
+  <line x1="1160" y1="435" x2="1220" y2="435" class="pin"/>
+  <line x1="1160" y1="490" x2="1220" y2="490" class="pin"/>
+  <line x1="1160" y1="545" x2="1220" y2="545" class="pin"/>
+  <line x1="1160" y1="600" x2="1220" y2="600" class="pin"/>
+  <line x1="1160" y1="655" x2="1220" y2="655" class="pin"/>
+  <line x1="1160" y1="710" x2="1220" y2="710" class="pin"/>
+  <line x1="1160" y1="765" x2="1220" y2="765" class="pin"/>
+  <line x1="1160" y1="820" x2="1220" y2="820" class="pin"/>
+  <line x1="1160" y1="875" x2="1220" y2="875" class="pin"/>
+  <text x="1232" y="386" class="pname">BAT</text>
+  <text x="1232" y="441" class="pname">GND</text>
+  <text x="1232" y="496" class="pname">5V</text>
+  <text x="1232" y="551" class="pname">3V3</text>
+  <text x="1232" y="606" class="pname">IO4</text>
+  <text x="1232" y="661" class="pname">IO14</text>
+  <text x="1232" y="716" class="pname">IO15</text>
+  <text x="1232" y="771" class="pname">IO27</text>
+  <text x="1232" y="826" class="pname">IO26</text>
+  <text x="1232" y="881" class="pname">IO25</text>
+
+  <!-- right column pins (board's left header) -->
+  <line x1="1580" y1="380" x2="1640" y2="380" class="pin"/>
+  <line x1="1580" y1="435" x2="1640" y2="435" class="pin"/>
+  <line x1="1580" y1="490" x2="1640" y2="490" class="pin"/>
+  <line x1="1580" y1="545" x2="1640" y2="545" class="pin"/>
+  <line x1="1580" y1="600" x2="1640" y2="600" class="pin"/>
+  <line x1="1580" y1="655" x2="1640" y2="655" class="pin"/>
+  <line x1="1580" y1="710" x2="1640" y2="710" class="pin"/>
+  <line x1="1580" y1="765" x2="1640" y2="765" class="pin"/>
+  <line x1="1580" y1="820" x2="1640" y2="820" class="pin"/>
+  <line x1="1580" y1="875" x2="1640" y2="875" class="pin"/>
+  <text x="1568" y="386" class="pname" text-anchor="end">IO23</text>
+  <text x="1568" y="441" class="pname" text-anchor="end">IO19</text>
+  <text x="1568" y="496" class="pname" text-anchor="end">IO18</text>
+  <text x="1568" y="551" class="pname" text-anchor="end">IO5</text>
+  <text x="1568" y="606" class="pname" text-anchor="end">IO22 / SCL</text>
+  <text x="1568" y="661" class="pname" text-anchor="end">IO21 / SDA</text>
+  <text x="1568" y="716" class="pname" text-anchor="end">IO32</text>
+  <text x="1568" y="771" class="pname" text-anchor="end">IO33</text>
+  <text x="1568" y="826" class="pname" text-anchor="end">RST</text>
+  <text x="1568" y="881" class="pname" text-anchor="end">GND</text>
+
+  <!-- no-connects -->
+  <g class="nc">
+    <line x1="1153" y1="373" x2="1167" y2="387"/><line x1="1167" y1="373" x2="1153" y2="387"/>
+    <line x1="1153" y1="483" x2="1167" y2="497"/><line x1="1167" y1="483" x2="1153" y2="497"/>
+    <line x1="1153" y1="648" x2="1167" y2="662"/><line x1="1167" y1="648" x2="1153" y2="662"/>
+    <line x1="1153" y1="703" x2="1167" y2="717"/><line x1="1167" y1="703" x2="1153" y2="717"/>
+    <line x1="1633" y1="373" x2="1647" y2="387"/><line x1="1647" y1="373" x2="1633" y2="387"/>
+    <line x1="1633" y1="428" x2="1647" y2="442"/><line x1="1647" y1="428" x2="1633" y2="442"/>
+    <line x1="1633" y1="483" x2="1647" y2="497"/><line x1="1647" y1="483" x2="1633" y2="497"/>
+    <line x1="1633" y1="538" x2="1647" y2="552"/><line x1="1647" y1="538" x2="1633" y2="552"/>
+    <line x1="1633" y1="703" x2="1647" y2="717"/><line x1="1647" y1="703" x2="1633" y2="717"/>
+    <line x1="1633" y1="758" x2="1647" y2="772"/><line x1="1647" y1="758" x2="1633" y2="772"/>
+    <line x1="1633" y1="813" x2="1647" y2="827"/><line x1="1647" y1="813" x2="1633" y2="827"/>
+  </g>
+  <text x="1160" y="612" class="nname" fill="#B9741A" text-anchor="end">reserved →</text>
+</g>
+
+<!-- ===== U3  BNO055 ===== -->
+<g id="sym-U3-bno055">
+  <rect x="1820" y="555" width="240" height="255" class="body"/>
+  <text x="1820" y="541" class="refdes">U3</text>
+  <text x="1820" y="834" class="cap">BNO055 9-DOF IMU breakout</text>
+  <line x1="1780" y1="600" x2="1820" y2="600" class="pin"/>
+  <line x1="1780" y1="655" x2="1820" y2="655" class="pin"/>
+  <line x1="1780" y1="710" x2="1820" y2="710" class="pin"/>
+  <line x1="1780" y1="765" x2="1820" y2="765" class="pin"/>
+  <text x="1832" y="606" class="pname">SCL</text>
+  <text x="1832" y="661" class="pname">SDA</text>
+  <text x="1832" y="716" class="pname">GND</text>
+  <text x="1832" y="771" class="pname">VIN</text>
+  <line x1="2060" y1="600" x2="2100" y2="600" class="pin"/>
+  <line x1="2060" y1="655" x2="2100" y2="655" class="pin"/>
+  <line x1="2060" y1="710" x2="2100" y2="710" class="pin"/>
+  <line x1="2060" y1="765" x2="2100" y2="765" class="pin"/>
+  <text x="2048" y="606" class="pname" text-anchor="end">3Vo</text>
+  <text x="2048" y="661" class="pname" text-anchor="end">RST</text>
+  <text x="2048" y="716" class="pname" text-anchor="end">INT</text>
+  <text x="2048" y="771" class="pname" text-anchor="end">ADR</text>
+  <g class="nc">
+    <line x1="2093" y1="593" x2="2107" y2="607"/><line x1="2107" y1="593" x2="2093" y2="607"/>
+    <line x1="2093" y1="648" x2="2107" y2="662"/><line x1="2107" y1="648" x2="2093" y2="662"/>
+    <line x1="2093" y1="703" x2="2107" y2="717"/><line x1="2107" y1="703" x2="2093" y2="717"/>
+    <line x1="2093" y1="758" x2="2107" y2="772"/><line x1="2107" y1="758" x2="2093" y2="772"/>
+  </g>
+  <g id="note-ref-10"><circle cx="1940" cy="590" r="12" fill="#FFEDEA" stroke="#C0392B" stroke-width="1.6"/><text x="1940" y="595" font-size="13" fill="#C0392B" text-anchor="middle">10</text></g>
+  <text x="1832" y="612" class="nname" fill="#6E736B"> </text>
+</g>
+
+<!-- ===== HIGH-CURRENT LOOP HIGHLIGHT ===== -->
+<g id="annot-current-loop" opacity="0.9">
+  <rect x="326" y="620" width="212" height="290" rx="10" fill="url(#hatch)" stroke="#C0392B" stroke-width="1.6" stroke-dasharray="7 6" opacity="0.55"/>
+  <text x="432" y="946" class="nname" fill="#C0392B" text-anchor="middle">high-current loop — keep small</text>
+</g>
+
+<!-- ===== MOTOR COIL NETS ===== -->
+<g id="net-coils">
+  <line x1="340" y1="440" x2="520" y2="440" class="wire" stroke="#7B3FA0"/>
+  <line x1="340" y1="490" x2="520" y2="490" class="wire" stroke="#7B3FA0"/>
+  <line x1="340" y1="540" x2="520" y2="540" class="wire" stroke="#1D6FB8"/>
+  <line x1="340" y1="590" x2="520" y2="590" class="wire" stroke="#1D6FB8"/>
+  <text x="430" y="430" class="nname" fill="#7B3FA0" text-anchor="middle">MOT_B2</text>
+  <text x="430" y="480" class="nname" fill="#7B3FA0" text-anchor="middle">MOT_B1</text>
+  <text x="430" y="530" class="nname" fill="#1D6FB8" text-anchor="middle">MOT_A1</text>
+  <text x="430" y="580" class="nname" fill="#1D6FB8" text-anchor="middle">MOT_A2</text>
+</g>
+
+<!-- ===== MOTOR-SIDE POWER (VM / GND) ===== -->
+<g id="net-vm-gnd-motor">
+  <!-- V- to U1 GND -->
+  <polyline points="340,840 360,840 360,640 520,640" class="wire" stroke="#3A3A38"/>
+  <!-- V+ to U1 VM, hopping over V- -->
+  <path d="M 340,785 L 348,785 A 12 12 0 0 1 372,785 L 430,785 L 430,690 L 520,690" class="wire" stroke="#C0392B"/>
+  <text x="392" y="628" class="nname" fill="#3A3A38">GND</text>
+  <text x="392" y="777" class="nname" fill="#C0392B">+10V</text>
+  <!-- ground reference at supply return -->
+  <line x1="360" y1="840" x2="360" y2="898" stroke="#3A3A38" stroke-width="3.6"/>
+  <line x1="343" y1="898" x2="377" y2="898" stroke="#3A3A38" stroke-width="3.6"/>
+  <line x1="349" y1="906" x2="371" y2="906" stroke="#3A3A38" stroke-width="3.2"/>
+  <line x1="355" y1="914" x2="365" y2="914" stroke="#3A3A38" stroke-width="3"/>
+  <circle cx="360" cy="840" r="5.5" fill="#3A3A38"/>
+</g>
+
+<!-- ===== U1 LOGIC POWER FLAGS ===== -->
+<g id="flags-u1-power">
+  <polygon points="520,340 510,326 430,326 430,354 510,354" fill="#EFEFEE" stroke="#3A3A38" stroke-width="2.2"/>
+  <text x="472" y="346" class="nname" fill="#3A3A38" text-anchor="middle">GND</text>
+  <polygon points="520,390 510,376 430,376 430,404 510,404" fill="#FCF1E1" stroke="#E08A1E" stroke-width="2.2"/>
+  <text x="472" y="396" class="nname" fill="#B9741A" text-anchor="middle">+3V3</text>
+</g>
+
+<!-- ===== C1 BULK CAPACITOR (proposed addition) ===== -->
+<g id="add-C1-bulk">
+  <line x1="720" y1="808" x2="720" y2="828" stroke="#C0392B" stroke-width="3.4"/>
+  <line x1="698" y1="828" x2="742" y2="828" stroke="#C0392B" stroke-width="4"/>
+  <path d="M 698,850 Q 720,838 742,850" fill="none" stroke="#3A3A38" stroke-width="4"/>
+  <line x1="720" y1="848" x2="720" y2="872" stroke="#3A3A38" stroke-width="3.4"/>
+  <text x="686" y="822" class="nname" fill="#C0392B" text-anchor="end">+</text>
+  <!-- +10V symbol -->
+  <line x1="720" y1="808" x2="720" y2="788" stroke="#C0392B" stroke-width="3.4"/>
+  <line x1="704" y1="788" x2="736" y2="788" stroke="#C0392B" stroke-width="3.4"/>
+  <text x="720" y="778" class="nname" fill="#C0392B" text-anchor="middle">+10V</text>
+  <!-- GND symbol -->
+  <line x1="720" y1="872" x2="720" y2="890" stroke="#3A3A38" stroke-width="3.4"/>
+  <line x1="703" y1="890" x2="737" y2="890" stroke="#3A3A38" stroke-width="3.6"/>
+  <line x1="709" y1="898" x2="731" y2="898" stroke="#3A3A38" stroke-width="3.2"/>
+  <line x1="715" y1="906" x2="725" y2="906" stroke="#3A3A38" stroke-width="3"/>
+  <text x="756" y="826" class="refdes" font-size="19">C1</text>
+  <text x="756" y="848" class="nname" fill="#2A2E29">100 µF / 25 V</text>
+  <text x="756" y="868" class="nname" fill="#B9741A">add — ≤20 mm from U1</text>
+  <g id="note-ref-2"><circle cx="908" cy="826" r="12" fill="#FFEDEA" stroke="#C0392B" stroke-width="1.6"/><text x="908" y="831" font-size="13" fill="#C0392B" text-anchor="middle">2</text></g>
+</g>
+
+<!-- ===== STEP / DIR / EN ===== -->
+<g id="net-step-dir-en">
+  <!-- DIR: U1 DIR -> IO26 -->
+  <polyline points="930,340 960,340 960,820 1160,820" class="wire" stroke="#C79A12"/>
+  <!-- STEP: U1 STEP -> IO27, hopping DIR riser -->
+  <path d="M 930,390 L 948,390 A 12 12 0 0 1 972,390 L 1000,390 L 1000,765 L 1160,765" class="wire" stroke="#0E8A5F"/>
+  <!-- EN: U1 EN -> IO25 -->
+  <polyline points="930,690 940,690 940,875 1160,875" class="wire" stroke="#B5179E"/>
+  <text x="1078" y="810" class="nname" fill="#C79A12">DIR</text>
+  <text x="1078" y="755" class="nname" fill="#0E8A5F">STEP</text>
+  <text x="1078" y="865" class="nname" fill="#B5179E">nEN</text>
+</g>
+
+<!-- ===== R1 EN PULL-UP (proposed addition) ===== -->
+<g id="add-R1-enable-pullup">
+  <circle cx="1080" cy="875" r="5.5" fill="#B5179E"/>
+  <line x1="1080" y1="875" x2="1080" y2="890" stroke="#B5179E" stroke-width="3.2" stroke-dasharray="9 7"/>
+  <rect x="1064" y="890" width="32" height="42" fill="#FFFFFF" stroke="#B5179E" stroke-width="2.6" stroke-dasharray="9 7"/>
+  <line x1="1080" y1="932" x2="1080" y2="946" stroke="#E08A1E" stroke-width="3.4"/>
+  <line x1="1064" y1="946" x2="1096" y2="946" stroke="#E08A1E" stroke-width="3.4"/>
+  <text x="1080" y="964" class="nname" fill="#B9741A" text-anchor="middle">+3V3</text>
+  <text x="1108" y="904" class="refdes" font-size="19" fill="#B5179E">R1</text>
+  <text x="1108" y="924" class="nname" fill="#2A2E29">10 kΩ</text>
+  <text x="1108" y="944" class="nname" fill="#B9741A">add</text>
+  <g id="note-ref-3"><circle cx="1136" cy="878" r="12" fill="#FFEDEA" stroke="#C0392B" stroke-width="1.6"/><text x="1136" y="883" font-size="13" fill="#C0392B" text-anchor="middle">3</text></g>
+</g>
+
+<!-- ===== U2 POWER FLAGS ===== -->
+<g id="flags-u2-power">
+  <polygon points="1160,435 1150,421 1060,421 1060,449 1150,449" fill="#EFEFEE" stroke="#3A3A38" stroke-width="2.2"/>
+  <text x="1108" y="441" class="nname" fill="#3A3A38" text-anchor="middle">GND</text>
+  <polygon points="1160,545 1150,531 1060,531 1060,559 1150,559" fill="#FCF1E1" stroke="#E08A1E" stroke-width="2.2"/>
+  <text x="1108" y="551" class="nname" fill="#B9741A" text-anchor="middle">+3V3</text>
+  <polygon points="1640,875 1650,861 1740,861 1740,889 1650,889" fill="#EFEFEE" stroke="#3A3A38" stroke-width="2.2"/>
+  <text x="1692" y="881" class="nname" fill="#3A3A38" text-anchor="middle">GND</text>
+</g>
+
+<!-- ===== I2C ===== -->
+<g id="net-i2c">
+  <line x1="1640" y1="600" x2="1780" y2="600" class="wire" stroke="#0E7C86"/>
+  <line x1="1640" y1="655" x2="1780" y2="655" class="wire" stroke="#3B3BC4"/>
+  <text x="1710" y="590" class="nname" fill="#0E7C86" text-anchor="middle">SCL</text>
+  <text x="1710" y="645" class="nname" fill="#3B3BC4" text-anchor="middle">SDA</text>
+</g>
+
+<!-- ===== U3 POWER FLAGS ===== -->
+<g id="flags-u3-power">
+  <polygon points="1780,710 1770,696 1680,696 1680,724 1770,724" fill="#EFEFEE" stroke="#3A3A38" stroke-width="2.2"/>
+  <text x="1728" y="716" class="nname" fill="#3A3A38" text-anchor="middle">GND</text>
+  <polygon points="1780,765 1770,751 1680,751 1680,779 1770,779" fill="#FCF1E1" stroke="#E08A1E" stroke-width="2.2"/>
+  <text x="1728" y="771" class="nname" fill="#B9741A" text-anchor="middle">+3V3</text>
+  <g id="note-ref-7"><circle cx="1728" cy="806" r="12" fill="#FFF6E5" stroke="#B9741A" stroke-width="1.6"/><text x="1728" y="811" font-size="13" fill="#B9741A" text-anchor="middle">7</text></g>
+</g>
+
+<!-- ===== NOTES ===== -->
+<g id="layer-notes">
+  <text x="72" y="1006" class="hdr">Notes and corrections</text>
+
+  <g id="note-1"><circle cx="86" cy="1034" r="12" fill="#FFF6E5" stroke="#B9741A" stroke-width="1.6"/><text x="86" y="1039" font-size="13" fill="#B9741A" text-anchor="middle">1</text>
+  <text x="108" y="1032" class="note">Confirm coil pairing with a meter before power-up: 2–4 Ω between the two wires of one</text>
+  <text x="108" y="1052" class="note">coil, open circuit across coils. Mis-paired A/B gives buzz and no rotation.</text></g>
+
+  <g id="note-2"><circle cx="86" cy="1082" r="12" fill="#FFEDEA" stroke="#C0392B" stroke-width="1.6"/><text x="86" y="1087" font-size="13" fill="#C0392B" text-anchor="middle">2</text>
+  <text x="108" y="1080" class="note">Add C1, 100 µF / ≥25 V low-ESR, across VM–GND within 20 mm of U1. Without it the coil</text>
+  <text x="108" y="1100" class="note">inductive kick can exceed the TMC2209’s 29 V absolute max. Commonest cause of dead drivers.</text></g>
+
+  <g id="note-3"><circle cx="86" cy="1130" r="12" fill="#FFEDEA" stroke="#C0392B" stroke-width="1.6"/><text x="86" y="1135" font-size="13" fill="#C0392B" text-anchor="middle">3</text>
+  <text x="108" y="1128" class="note">Add R1, 10 kΩ from EN to +3V3. EN is active-low and ESP32 pins float through boot, so</text>
+  <text x="108" y="1148" class="note">without it the coils can energise before firmware runs — a real hazard on a fleet.</text></g>
+
+  <g id="note-4"><circle cx="86" cy="1178" r="12" fill="#FFF6E5" stroke="#B9741A" stroke-width="1.6"/><text x="86" y="1183" font-size="13" fill="#B9741A" text-anchor="middle">4</text>
+  <text x="108" y="1176" class="note">Optional: PDN_UART → IO4 through 1 kΩ. Enables UART mode — run/hold current, microstep,</text>
+  <text x="108" y="1196" class="note">StealthChop and StallGuard all set in firmware. Worth one wire for per-unit calibration.</text></g>
+
+  <g id="note-5"><circle cx="86" cy="1226" r="12" fill="#FFF6E5" stroke="#B9741A" stroke-width="1.6"/><text x="86" y="1231" font-size="13" fill="#B9741A" text-anchor="middle">5</text>
+  <text x="108" y="1224" class="note">MS1/MS2 open reads as 1/8 microstep with 256-step interpolation on most StepSticks.</text>
+  <text x="108" y="1244" class="note">Break them out to jumpers or IO14/IO15 if you want 1/16 or 1/32 in hardware.</text></g>
+
+  <g id="note-6"><circle cx="774" cy="1034" r="12" fill="#FFF6E5" stroke="#B9741A" stroke-width="1.6"/><text x="774" y="1039" font-size="13" fill="#B9741A" text-anchor="middle">6</text>
+  <text x="796" y="1032" class="note">The second “PDN” in the sketch is vendor-dependent — usually DIAG or INDEX.</text>
+  <text x="796" y="1052" class="note">Read the silkscreen before locking the footprint pin map.</text></g>
+
+  <g id="note-7"><circle cx="774" cy="1082" r="12" fill="#FFF6E5" stroke="#B9741A" stroke-width="1.6"/><text x="774" y="1087" font-size="13" fill="#B9741A" text-anchor="middle">7</text>
+  <text x="796" y="1080" class="note">U3 VIN on +3V3: breakout LDOs drop ~0.3 V, so the sensor rail lands near 3.0 V. It runs,</text>
+  <text x="796" y="1100" class="note">but if USB is always present prefer VIN → 5V. Check your module’s regulator.</text></g>
+
+  <g id="note-8"><circle cx="774" cy="1130" r="12" fill="#FFF6E5" stroke="#B9741A" stroke-width="1.6"/><text x="774" y="1135" font-size="13" fill="#B9741A" text-anchor="middle">8</text>
+  <text x="796" y="1128" class="note">VM = 10 V is legal (4.75–29 V) but caps step rate at a given torque. 12–24 V gives much</text>
+  <text x="796" y="1148" class="note">more headroom for fast wobble transitions. Size the supply for ≥ 1.2 × 2 × I_run.</text></g>
+
+  <g id="note-9"><circle cx="774" cy="1178" r="12" fill="#FFF6E5" stroke="#B9741A" stroke-width="1.6"/><text x="774" y="1183" font-size="13" fill="#B9741A" text-anchor="middle">9</text>
+  <text x="796" y="1176" class="note">Set the VREF trimpot before the first motion test. Factory position is usually far too hot</text>
+  <text x="796" y="1196" class="note">for a NEMA 17 on a 10 V rail, and a hot driver changes your motion model between units.</text></g>
+
+  <g id="note-10"><circle cx="774" cy="1226" r="12" fill="#FFEDEA" stroke="#C0392B" stroke-width="1.6"/><text x="774" y="1231" font-size="13" fill="#C0392B" text-anchor="middle">10</text>
+  <text x="796" y="1224" class="note">U3’s magnetometer will be corrupted by M1’s field and the coil traces. Run BNO055 in</text>
+  <text x="796" y="1244" class="note">IMUPLUS mode (accel + gyro) and place U3 as far from M1 and the VM loop as the board allows.</text></g>
+</g>
+
+<!-- ===== LEGEND ===== -->
+<g id="layer-legend">
+  <text x="1466" y="1006" class="hdr">Nets</text>
+  <g font-size="14.5">
+    <line x1="1466" y1="1030" x2="1508" y2="1030" stroke="#C0392B" stroke-width="4"/><text x="1518" y="1035" class="note">+10V (VM)</text>
+    <line x1="1466" y1="1058" x2="1508" y2="1058" stroke="#3A3A38" stroke-width="4"/><text x="1518" y="1063" class="note">GND</text>
+    <line x1="1466" y1="1086" x2="1508" y2="1086" stroke="#E08A1E" stroke-width="4"/><text x="1518" y="1091" class="note">+3V3</text>
+    <line x1="1466" y1="1114" x2="1508" y2="1114" stroke="#1D6FB8" stroke-width="4"/><text x="1518" y="1119" class="note">MOT_A1 / A2</text>
+    <line x1="1466" y1="1142" x2="1508" y2="1142" stroke="#7B3FA0" stroke-width="4"/><text x="1518" y="1147" class="note">MOT_B1 / B2</text>
+    <line x1="1466" y1="1170" x2="1508" y2="1170" stroke="#0E8A5F" stroke-width="4"/><text x="1518" y="1175" class="note">STEP → IO27</text>
+    <line x1="1466" y1="1198" x2="1508" y2="1198" stroke="#C79A12" stroke-width="4"/><text x="1518" y="1203" class="note">DIR → IO26</text>
+    <line x1="1466" y1="1226" x2="1508" y2="1226" stroke="#B5179E" stroke-width="4"/><text x="1518" y="1231" class="note">nEN → IO25</text>
+    <line x1="1466" y1="1254" x2="1508" y2="1254" stroke="#0E7C86" stroke-width="4"/><text x="1518" y="1259" class="note">SCL → IO22</text>
+    <line x1="1650" y1="1254" x2="1692" y2="1254" stroke="#3B3BC4" stroke-width="4"/><text x="1702" y="1259" class="note">SDA → IO21</text>
+  </g>
+  <g font-size="14.5">
+    <line x1="1650" y1="1030" x2="1692" y2="1030" stroke="#B5179E" stroke-width="3.2" stroke-dasharray="9 7"/><text x="1702" y="1035" class="note">proposed addition</text>
+    <g class="nc"><line x1="1664" y1="1051" x2="1678" y2="1065"/><line x1="1678" y1="1051" x2="1664" y2="1065"/></g><text x="1702" y="1063" class="note">no connect</text>
+    <circle cx="1671" cy="1086" r="5.5" fill="#3A3A38"/><text x="1702" y="1091" class="note">junction</text>
+    <path d="M 1659,1114 A 12 12 0 0 1 1683,1114" fill="none" stroke="#0E8A5F" stroke-width="3.6"/><text x="1702" y="1119" class="note">crossover, not connected</text>
+  </g>
+</g>
+
+<!-- ===== TITLE BLOCK ===== -->
+<g id="layer-titleblock">
+  <rect x="1800" y="994" width="400" height="262" fill="#FFFFFF" stroke="#16181A" stroke-width="2.2"/>
+  <line x1="1800" y1="1046" x2="2200" y2="1046" stroke="#16181A" stroke-width="1.4"/>
+  <line x1="1800" y1="1098" x2="2200" y2="1098" stroke="#16181A" stroke-width="1.4"/>
+  <line x1="1800" y1="1150" x2="2200" y2="1150" stroke="#16181A" stroke-width="1.4"/>
+  <line x1="1800" y1="1202" x2="2200" y2="1202" stroke="#16181A" stroke-width="1.4"/>
+  <line x1="1996" y1="1098" x2="1996" y2="1256" stroke="#16181A" stroke-width="1.4"/>
+
+  <text x="1814" y="1016" class="cap" font-size="12">Project</text>
+  <text x="1814" y="1038" class="ink" font-size="17" font-weight="700">Kinetic egg unit — drive board</text>
+  <text x="1814" y="1068" class="cap" font-size="12">Sheet</text>
+  <text x="1814" y="1090" class="ink" font-size="16">1 of 2 · Control &amp; drive schematic</text>
+
+  <text x="1814" y="1120" class="cap" font-size="12">Revision</text>
+  <text x="1814" y="1142" class="ink" font-size="16">A</text>
+  <text x="2010" y="1120" class="cap" font-size="12">Date</text>
+  <text x="2010" y="1142" class="ink" font-size="16">2026-09-09</text>
+
+  <text x="1814" y="1172" class="cap" font-size="12">Source</text>
+  <text x="1814" y="1194" class="ink" font-size="16">Hand sketch IMG_3484</text>
+  <text x="2010" y="1172" class="cap" font-size="12">Scale</text>
+  <text x="2010" y="1194" class="ink" font-size="16">Not to scale</text>
+
+  <text x="1814" y="1224" class="cap" font-size="12">Status</text>
+  <text x="1814" y="1246" class="ink" font-size="16">For review</text>
+  <text x="2010" y="1224" class="cap" font-size="12">Units</text>
+  <text x="2010" y="1246" class="ink" font-size="16">mm</text>
+</g>
+
+</svg>

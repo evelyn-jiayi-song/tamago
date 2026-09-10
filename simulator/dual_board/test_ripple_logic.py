@@ -76,10 +76,10 @@ class RippleLogicTests(unittest.TestCase):
         follower = FollowerController(delay_ms=0, target_fraction=0.5)
         self.assertTrue(follower.receive(packet, 0))
         command = follower.tick(0)
-        self.assertAlmostEqual(command["intensity"], 0.3)
-        self.assertAlmostEqual(command["rpm"], 18.0)
+        self.assertAlmostEqual(command["intensity"], 0.45)
+        self.assertAlmostEqual(command["rpm"], 27.0)
 
-    def test_stop_packet_is_delayed_and_stale_timeout_is_safe(self):
+    def test_stop_packet_and_stale_timeout_do_not_issue_motor_stop(self):
         follower = FollowerController(delay_ms=100, stale_timeout_ms=400)
         motion = {
             "v": 1, "kind": "motion", "source": "A", "seq": 1,
@@ -90,11 +90,11 @@ class RippleLogicTests(unittest.TestCase):
         self.assertEqual(follower.tick(100)["cmd"], "rock")
         follower.receive(stop, 150)
         self.assertIsNone(follower.tick(249))
-        self.assertEqual(follower.tick(250)["reason"], "peer_stop")
+        self.assertIsNone(follower.tick(250))
         follower = FollowerController(delay_ms=0, stale_timeout_ms=400)
         follower.receive(motion, 0)
-        follower.tick(0)
-        self.assertEqual(follower.tick(401)["reason"], "peer_stale")
+        self.assertEqual(follower.tick(0)["cmd"], "rock")
+        self.assertIsNone(follower.tick(401))
 
     def test_rejects_wrong_source_old_sequence_and_bad_version(self):
         follower = FollowerController()

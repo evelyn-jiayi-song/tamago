@@ -3,57 +3,259 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Wobble Wi-Fi Dashboard</title>
+  <title>Wobble / Motor Deck</title>
   <style>
-    :root{--bg:#0e1218;--panel:#151c25;--panel2:#1c2632;--line:#2a3746;--text:#e9eef4;--muted:#8d9bad;--cyan:#63e6e2;--red:#ff6b6b;--green:#69db9a}
-    *{box-sizing:border-box} body{margin:0;color:var(--text);background:var(--bg);font:14px/1.4 ui-sans-serif,system-ui,sans-serif}
-    main{max-width:1200px;margin:auto;padding:24px} header{display:flex;justify-content:space-between;gap:16px;align-items:end;margin-bottom:18px}
-    h1{margin:0;font-size:28px}.eyebrow{color:var(--cyan);font-size:11px;letter-spacing:.15em;text-transform:uppercase}.muted,.note{color:var(--muted)}
-    .grid{display:grid;grid-template-columns:1fr 1.5fr;gap:16px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:17px}.wide{grid-column:span 2}
-    h2{font-size:15px;margin:0 0 14px}.controls{display:grid;gap:12px}.field{display:grid;gap:6px}.field label{color:var(--muted);font-size:12px;display:flex;justify-content:space-between}
-    input,select{width:100%;padding:9px;border:1px solid var(--line);border-radius:8px;background:#0d131b;color:var(--text);font:inherit}input[type=range]{padding:0;accent-color:var(--cyan)}
-    button{border:0;border-radius:8px;padding:10px 12px;color:var(--text);background:#2a3746;cursor:pointer;font-weight:650}button.primary{background:var(--cyan);color:#062126}button.danger{background:var(--red);color:#2b0808}.actions{display:flex;gap:8px;flex-wrap:wrap}
-    .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{background:var(--panel2);border-radius:10px;padding:12px}.metric label{display:block;color:var(--muted);font-size:11px}.metric strong{font-size:24px}.unit{color:var(--muted);font-size:12px;margin-left:3px}
-    .status{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)}.status:last-child{border:0}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--red)}.dot.good{background:var(--green)}
-    canvas{width:100%;height:280px;background:#101720;border-radius:10px}.error{color:var(--red);min-height:18px;margin-top:8px}.note{font-size:12px;margin-top:12px}
-    @media(max-width:800px){.grid{display:block}.panel{margin-bottom:14px}.wide{display:block}}
+    :root { --bg:#0e1218; --panel:#151c25; --panel2:#1c2632; --line:#2a3746; --text:#e9eef4; --muted:#8d9bad; --cyan:#63e6e2; --amber:#ffc857; --red:#ff6b6b; --green:#69db9a; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--text); background:radial-gradient(circle at 80% -20%, #243746 0, transparent 42%), var(--bg); font:14px/1.4 ui-sans-serif, system-ui, -apple-system, sans-serif; }
+    .wrap { max-width:1420px; margin:0 auto; padding:26px; }
+    header { display:flex; justify-content:space-between; align-items:flex-end; gap:20px; margin-bottom:24px; }
+    h1 { margin:0; font-size:30px; letter-spacing:-.04em; }
+    .eyebrow { color:var(--cyan); font-size:11px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; }
+    .subtitle { color:var(--muted); margin:4px 0 0; }
+    .connection { display:flex; align-items:center; gap:9px; color:var(--muted); }
+    .dot { width:10px; height:10px; border-radius:50%; background:var(--red); box-shadow:0 0 14px currentColor; }
+    .dot.good { background:var(--green); color:var(--green); }
+    .grid { display:grid; grid-template-columns:1.05fr 1.65fr 1fr; gap:16px; }
+    .panel { background:rgba(21,28,37,.9); border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:0 18px 50px rgba(0,0,0,.15); }
+    .panel h2 { margin:0 0 16px; font-size:15px; letter-spacing:.01em; }
+    .panel h2 span { color:var(--muted); font-size:11px; font-weight:500; margin-left:7px; }
+    .wide { grid-column:span 2; }
+    .metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+    .metric { background:var(--panel2); border-radius:12px; padding:13px; min-height:82px; }
+    .metric label { display:block; color:var(--muted); font-size:11px; margin-bottom:8px; }
+    .metric strong { font-size:25px; letter-spacing:-.04em; font-weight:650; }
+    .unit { color:var(--muted); font-size:12px; margin-left:3px; }
+    .controls { display:grid; gap:16px; }
+    .field { display:grid; gap:7px; }
+    .field label { color:var(--muted); font-size:12px; display:flex; justify-content:space-between; }
+    input[type=number], select { width:100%; padding:10px 11px; border:1px solid var(--line); border-radius:9px; background:#0d131b; color:var(--text); font:inherit; }
+    input[type=range] { width:100%; accent-color:var(--cyan); }
+    .range-value { color:var(--cyan); font-variant-numeric:tabular-nums; }
+    .seg { display:flex; gap:7px; }
+    button { border:0; border-radius:9px; padding:11px 14px; color:var(--text); background:#2a3746; cursor:pointer; font:650 13px inherit; transition:.15s; }
+    button:hover { filter:brightness(1.15); transform:translateY(-1px); }
+    button.primary { background:var(--cyan); color:#062126; }
+    button.danger { background:var(--red); color:#2b0808; }
+    button.secondary { background:transparent; border:1px solid var(--line); }
+    .dir.active { border-color:var(--cyan); color:var(--cyan); background:rgba(99,230,226,.08); }
+    .actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .actions .danger { grid-column:span 2; }
+    .status-line { display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid rgba(42,55,70,.65); }
+    .status-line:last-child { border:0; }
+    .status-line span:first-child { color:var(--muted); }
+    .pill { padding:3px 8px; border-radius:30px; font-size:11px; color:var(--amber); background:rgba(255,200,87,.12); }
+    .pill.good { color:var(--green); background:rgba(105,219,154,.12); }
+    .pill.bad { color:var(--red); background:rgba(255,107,107,.12); }
+    canvas { width:100%; height:280px; display:block; background:#101720; border-radius:11px; }
+    .legend { display:flex; gap:16px; color:var(--muted); font-size:11px; margin-top:10px; }
+    .legend i { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:5px; }
+    .note { color:var(--muted); font-size:12px; margin-top:14px; }
+    .error { color:var(--red); min-height:18px; margin-top:10px; font-size:12px; }
+    .progress { height:8px; background:#0c1219; border-radius:99px; overflow:hidden; margin-top:12px; }
+    .progress > div { height:100%; width:0; background:linear-gradient(90deg,var(--cyan),#99f6e4); transition:width .2s; }
+    .board-overview { grid-column:1 / -1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    .board-card { background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:14px; }
+    .board-card h3 { margin:0 0 10px; font-size:14px; display:flex; justify-content:space-between; }
+    .board-card .status-line { padding:6px 0; }
+    .command-grid { grid-column:1 / -1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+    .orientation-grid { grid-column:1 / -1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+    .peer-panel { grid-column:1 / -1; }
+    .peer-controls { display:grid; grid-template-columns:1fr 1fr auto; gap:16px; align-items:end; }
+    .peer-status { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:16px; }
+    .peer-status .metric { min-height:64px; }
+    @media (max-width:1000px) { .command-grid,.orientation-grid { grid-template-columns:1fr; } .peer-controls { grid-template-columns:1fr; } }
+    @media (max-width:1000px) { .grid { grid-template-columns:1fr 1fr; } .wide { grid-column:span 2; } }
+    @media (max-width:650px) { .wrap{padding:16px} header{display:block} .connection{margin-top:14px} .grid{display:block} .panel{margin-bottom:14px} }
   </style>
 </head>
-<body><main>
-  <header><div><div class="eyebrow">ESP32 / BNO055 / Wi-Fi</div><h1>Wobble wireless deck</h1><div class="muted">Two-egg telemetry, commands, and laptop-relayed peer motion.</div></div><div><i class="dot" id="dot"></i> <span id="connection">Disconnected</span></div></header>
-  <section class="grid">
-    <article class="panel"><h2>Motion command</h2><div class="controls">
-      <div class="field"><label>Target egg</label><select id="target"></select></div>
-      <div class="field"><label>Pattern</label><select id="pattern"><option value="run">Run distance</option><option value="rock">Continuous rocking</option><option value="once">Rock and stop</option></select></div>
-      <div class="field"><label>Peak speed <span><b id="rpmValue">60</b> RPM</span></label><input id="rpm" type="range" min="1" max="240" value="60"></div>
-      <div class="field"><label>Acceleration <span><b id="accelValue">60</b> RPM/s</span></label><input id="accel" type="range" min="1" max="120" value="60"></div>
-      <div class="field"><label>Distance (revolutions)</label><input id="distance" type="number" min="0" step=".01" value="1"></div>
-      <div class="field"><label>Rock amplitude (one-way revolutions)</label><input id="amplitude" type="number" min=".01" step=".01" value=".25"></div>
-      <div class="field"><label>Rock cycles (0 = continuous)</label><input id="cycles" type="number" min="0" step="1" value="2"></div>
-      <div class="actions"><button class="primary" id="run">Run</button><button id="stop">Stop</button><button class="danger" id="estop">Emergency stop</button><button id="clear">Clear e-stop</button><button id="tare">Tare IMU</button></div>
-    </div><div class="note">The ESP32 stops its motor if no heartbeat arrives for 750 ms. Peer mode is deliberately off until enabled.</div><div class="error" id="error"></div></article>
-    <article class="panel"><h2>Peer mode</h2><div class="status"><span>Laptop relay</span><b id="peerState">off</b></div><div class="status"><span>Ripple delay</span><span id="peerDelay">250 ms</span></div><div class="status"><span>Follower scale</span><span id="peerScale">50%</span></div><div class="actions"><button class="primary" id="peerToggle">Enable peer mode</button></div><div class="note">Each egg's filtered IMU motion is sent to the other egg after a 250 ms delay at 50% intensity.</div></article>
-    <article class="panel wide"><h2>Egg telemetry</h2><div id="boards" class="grid"></div></article>
-  </section>
-</main><script>
-const $=id=>document.getElementById(id);let online=false,boards={};
-function fixed(v,d=1){return Number.isFinite(Number(v))?Number(v).toFixed(d):'—'}
-function post(path,payload={}){return fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(r=>r.json()).catch(e=>{$('error').textContent=e.message})}
-function boardCard(id,s){const i=s.imu||{},m=s.motor||{},w=s.wifi||{},hb=s.heartbeat||{},cal=i.calibration;
-  return `<article class="panel"><h2>${id} <span class="muted">${s.connected?'connected':'offline'}</span></h2>
-  <div class="metrics"><div class="metric"><label>Heading</label><strong>${fixed(i.heading)}</strong><span class="unit">°</span></div>
-  <div class="metric"><label>Roll</label><strong>${fixed(i.roll)}</strong><span class="unit">°</span></div>
-  <div class="metric"><label>Pitch</label><strong>${fixed(i.pitch)}</strong><span class="unit">°</span></div></div>
-  <div class="status"><span>Motor</span><span>${m.estopped?'e-stop':(m.running?'running':'idle')} / ${fixed(m.rpm,0)} RPM</span></div>
-  <div class="status"><span>Temperature</span><span>${fixed(i.temperature_c,0)} °C</span></div>
-  <div class="status"><span>Calibration</span><span>${cal&&typeof cal==='object'?`S${cal.sys} G${cal.gyro} A${cal.accel} M${cal.mag}`:'—'}</span></div>
-  <div class="status"><span>Wi-Fi / heartbeat</span><span>${w.ip||'—'} / ${hb.armed?fixed(hb.age_ms,0)+' ms':'idle'}</span></div>
-  <div class="actions"><button onclick="sendCommand('${id}',{cmd:'stop'})">Stop</button><button class="danger" onclick="sendCommand('${id}',{cmd:'estop'})">E-stop</button><button onclick="sendCommand('${id}',{cmd:'tare'})">Tare</button></div></article>`
-}
-function sendCommand(board,payload){post('/api/command',{...payload,board})}
-function render(s){boards=s.boards||{};const ids=Object.keys(boards),was=$('target').value;$('target').innerHTML=ids.map(id=>`<option>${id}</option>`).join('');if(ids.includes(was))$('target').value=was;$('boards').innerHTML=ids.map(id=>boardCard(id,boards[id])).join('');online=ids.length>0&&ids.every(id=>boards[id].connected);$('dot').classList.toggle('good',online);$('connection').textContent=online?'Both eggs connected':(ids.some(id=>boards[id].connected)?'One egg connected':'Disconnected');const p=s.peer||{};$('peerState').textContent=p.enabled?'on':'off';$('peerToggle').textContent=p.enabled?'Disable peer mode':'Enable peer mode';$('peerDelay').textContent=`${p.delay_ms||250} ms`;$('peerScale').textContent=`${Math.round((p.target_fraction||.5)*100)}%`;if(ids.length<2)$('peerToggle').disabled=true}
-$('rpm').oninput=()=>{$('rpmValue').textContent=$('rpm').value};$('accel').oninput=()=>{$('accelValue').textContent=$('accel').value};
-$('run').onclick=()=>{const p=$('pattern').value,c={board:$('target').value,rpm:+$('rpm').value,accel:+$('accel').value};post('/api/command',p==='run'?{...c,cmd:'run',distance_rev:+$('distance').value}:{...c,cmd:'rock',amplitude_rev:+$('amplitude').value,cycles:p==='once'?+$('cycles').value:0})};
-$('stop').onclick=()=>sendCommand($('target').value,{cmd:'stop'});$('estop').onclick=()=>sendCommand($('target').value,{cmd:'estop'});$('clear').onclick=()=>sendCommand($('target').value,{cmd:'clear_estop'});$('tare').onclick=()=>sendCommand($('target').value,{cmd:'tare'});
-$('peerToggle').onclick=()=>post('/api/peer',{enabled:$('peerState').textContent==='off'});async function refresh(){try{const r=await fetch('/api/state',{cache:'no-store'});render(await r.json())}catch(e){$('error').textContent=e.message;$('connection').textContent='Bridge unavailable'}}setInterval(()=>post('/api/heartbeat'),250);setInterval(refresh,100);refresh();
-</script></body></html>
+<body>
+  <main class="wrap">
+    <header>
+      <div><div class="eyebrow">ESP32 / BNO055 / TMC2209 / WI-FI</div><h1>Wobble motor deck</h1><p class="subtitle">Live wireless orientation, motion commands, and laptop-relayed peer motion.</p></div>
+      <div class="connection"><i class="dot" id="connectionDot"></i><span id="connectionText">Connecting…</span></div>
+    </header>
+
+    <section class="grid">
+      <article class="panel board-overview">
+        <div class="board-card" id="egg-a-overview"><h3>egg-a <span class="pill">waiting</span></h3><div class="status-line"><span>IMU</span><span>—</span></div><div class="status-line"><span>Motor</span><span>—</span></div></div>
+        <div class="board-card" id="egg-b-overview"><h3>egg-b <span class="pill">waiting</span></h3><div class="status-line"><span>IMU</span><span>—</span></div><div class="status-line"><span>Motor</span><span>—</span></div></div>
+      </article>
+      <section class="command-grid">
+        <article class="panel" data-command-board="egg-a">
+          <h2>Motion command 1 <span>egg-a · step / dir</span></h2>
+          <div class="controls">
+            <div class="field"><label>Movement mode</label><select data-field="mode"><option value="distance">One-way rotation to distance</option><option value="rock_once">Rock once (back and forth)</option></select></div>
+            <div class="field"><label>Distance <span class="range-value">shaft revolutions</span></label><input data-field="distance" type="number" min="0" step="0.01" value="1"></div>
+            <div class="field"><label>Rock amplitude <span class="range-value">one-way revolutions</span></label><input data-field="amplitude" type="number" min="0.01" step="0.01" value="0.25"></div>
+            <div class="field"><label>Peak speed <span class="range-value"><b data-value="rpm">30</b> RPM</span></label><input data-field="rpm" type="range" min="1" max="240" value="30"></div>
+            <div class="field"><label>Acceleration <span class="range-value"><b data-value="accel">20</b> RPM/s</span></label><input data-field="accel" type="range" min="1" max="120" value="20"></div>
+            <div class="field"><label>Direction</label><select data-field="direction"><option value="1">Clockwise</option><option value="-1">Counter-clockwise</option></select></div>
+            <div class="actions"><button class="primary" data-action="run">Run distance</button><button class="secondary" data-action="stop">Stop</button><button class="secondary" data-action="tare">Tare IMU</button><button class="danger" data-action="estop">Stop immediately</button></div>
+          </div>
+          <div class="progress"><div data-progress></div></div>
+          <div class="error" data-error></div>
+        </article>
+        <article class="panel" data-command-board="egg-b">
+          <h2>Motion command 2 <span>egg-b · step / dir</span></h2>
+          <div class="controls">
+            <div class="field"><label>Movement mode</label><select data-field="mode"><option value="distance">One-way rotation to distance</option><option value="rock_once">Rock once (back and forth)</option></select></div>
+            <div class="field"><label>Distance <span class="range-value">shaft revolutions</span></label><input data-field="distance" type="number" min="0" step="0.01" value="1"></div>
+            <div class="field"><label>Rock amplitude <span class="range-value">one-way revolutions</span></label><input data-field="amplitude" type="number" min="0.01" step="0.01" value="0.25"></div>
+            <div class="field"><label>Peak speed <span class="range-value"><b data-value="rpm">30</b> RPM</span></label><input data-field="rpm" type="range" min="1" max="240" value="30"></div>
+            <div class="field"><label>Acceleration <span class="range-value"><b data-value="accel">20</b> RPM/s</span></label><input data-field="accel" type="range" min="1" max="120" value="20"></div>
+            <div class="field"><label>Direction</label><select data-field="direction"><option value="1">Clockwise</option><option value="-1">Counter-clockwise</option></select></div>
+            <div class="actions"><button class="primary" data-action="run">Run distance</button><button class="secondary" data-action="stop">Stop</button><button class="secondary" data-action="tare">Tare IMU</button><button class="danger" data-action="estop">Stop immediately</button></div>
+          </div>
+          <div class="progress"><div data-progress></div></div>
+          <div class="error" data-error></div>
+        </article>
+      </section>
+
+      <section class="orientation-grid">
+        <article class="panel" data-orientation-board="egg-a"><h2>Orientation 1 <span>egg-a · relative to tare</span></h2><div class="metrics"><div class="metric"><label>Heading / yaw</label><strong data-orientation="heading">—</strong><span class="unit">°</span></div><div class="metric"><label>Roll</label><strong data-orientation="roll">—</strong><span class="unit">°</span></div><div class="metric"><label>Pitch</label><strong data-orientation="pitch">—</strong><span class="unit">°</span></div></div><div class="status-line"><span>Accel X / Y / Z</span><span data-orientation="accel">—</span></div><div class="status-line"><span>Gyro X / Y / Z</span><span data-orientation="gyro">—</span></div><div class="status-line"><span>Temperature</span><span data-orientation="temperature">—</span></div></article>
+        <article class="panel" data-orientation-board="egg-b"><h2>Orientation 2 <span>egg-b · relative to tare</span></h2><div class="metrics"><div class="metric"><label>Heading / yaw</label><strong data-orientation="heading">—</strong><span class="unit">°</span></div><div class="metric"><label>Roll</label><strong data-orientation="roll">—</strong><span class="unit">°</span></div><div class="metric"><label>Pitch</label><strong data-orientation="pitch">—</strong><span class="unit">°</span></div></div><div class="status-line"><span>Accel X / Y / Z</span><span data-orientation="accel">—</span></div><div class="status-line"><span>Gyro X / Y / Z</span><span data-orientation="gyro">—</span></div><div class="status-line"><span>Temperature</span><span data-orientation="temperature">—</span></div></article>
+      </section>
+
+      <article class="panel peer-panel">
+        <h2>Peer mode <span>optional laptop-relayed coordination</span></h2>
+        <div class="peer-controls">
+          <div class="field"><label for="peerIntensity">Follower intensity <span class="range-value"><b id="peerIntensityValue">0.50</b></span></label><input id="peerIntensity" type="range" min="0.05" max="1" step="0.05" value="0.5"></div>
+          <div><div class="status-line"><span>Relay status</span><span id="peer">off</span></div><div class="status-line"><span>Response gain</span><span id="peerGain">—</span></div></div>
+          <button class="primary" id="peerToggle">Enable peer relay</button>
+        </div>
+        <div class="peer-status"><div class="metric"><label>Egg A source</label><strong id="sourceA">—</strong></div><div class="metric"><label>Egg B source</label><strong id="sourceB">—</strong></div><div class="metric"><label>Last peer commands</label><strong id="peerCommands">—</strong></div></div>
+        <div class="note">Each motion command targets its own egg over Wi-Fi. Run defaults are 30 RPM with a 20 RPM/s ramp to reduce resonance and current spikes. Peer mode does not change the independent command panels.</div>
+      </article>
+    </section>
+  </main>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const boardIds = ['egg-a', 'egg-b'];
+    document.querySelectorAll('[data-command-board]').forEach((panel) => {
+      const board = panel.dataset.commandBoard;
+      panel.querySelector('[data-field="rpm"]').addEventListener('input', (event) => {
+        panel.querySelector('[data-value="rpm"]').textContent = event.target.value;
+      });
+      panel.querySelector('[data-field="accel"]').addEventListener('input', (event) => {
+        panel.querySelector('[data-value="accel"]').textContent = event.target.value;
+      });
+      panel.querySelectorAll('[data-action]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const action = button.dataset.action;
+          const command = {board, cmd: action};
+          if (action === 'run') {
+            const mode = panel.querySelector('[data-field="mode"]').value;
+            const common = {
+              rpm: Number(panel.querySelector('[data-field="rpm"]').value),
+              accel: Number(panel.querySelector('[data-field="accel"]').value),
+              direction: Number(panel.querySelector('[data-field="direction"]').value)
+            };
+            if (mode === 'rock_once') {
+              Object.assign(command, common, {
+                cmd: 'rock',
+                amplitude_rev: Number(panel.querySelector('[data-field="amplitude"]').value),
+                cycles: 1
+              });
+            } else {
+              Object.assign(command, common, {
+                cmd: 'run',
+                distance_rev: Number(panel.querySelector('[data-field="distance"]').value)
+              });
+            }
+          }
+          sendCommand(command, panel.querySelector('[data-error]'));
+        });
+      });
+    });
+    $('peerIntensity').addEventListener('input', () => $('peerIntensityValue').textContent = Number($('peerIntensity').value).toFixed(2));
+    $('peerIntensity').addEventListener('change', () => {
+      fetch('/api/peer', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({target_fraction: Number($('peerIntensity').value)})
+      }).catch((error) => document.querySelector('.peer-panel .note').textContent = error.message);
+    });
+    $('peerToggle').addEventListener('click', () => {
+      fetch('/api/peer', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({enabled: $('peerToggle').dataset.enabled !== 'true'})
+      }).catch((error) => document.querySelector('.peer-panel .note').textContent = error.message);
+    });
+
+    async function sendCommand(command, errorElement) {
+      errorElement.textContent = '';
+      try {
+        const response = await fetch('/api/command', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(command)});
+        const body = await response.json();
+        if (!body.ok) errorElement.textContent = body.error || 'Command failed';
+      } catch (error) {
+        errorElement.textContent = error.message;
+      }
+    }
+
+    function fixed(value, digits=2) { return Number.isFinite(Number(value)) ? Number(value).toFixed(digits) : '—'; }
+    function vec(v) { return v ? `${fixed(v.x)} / ${fixed(v.y)} / ${fixed(v.z)}` : '—'; }
+    function renderOverview(id, board) {
+      const card = $(id + '-overview');
+      if (!card) return;
+      const imu = board.imu || {}, motor = board.motor || {};
+      const state = board.connected && board.last_rx ? 'streaming' : (board.connected ? 'connected / waiting' : 'offline');
+      const pillClass = state === 'streaming' ? 'pill good' : (state === 'offline' ? 'pill bad' : 'pill');
+      card.innerHTML = `<h3>${id} <span class="${pillClass}">${state}</span></h3>
+        <div class="status-line"><span>Heading / roll / pitch</span><span>${fixed(imu.heading,1)}° / ${fixed(imu.roll,1)}° / ${fixed(imu.pitch,1)}°</span></div>
+        <div class="status-line"><span>Gyro X / Y / Z</span><span>${vec(imu.gyro)} °/s</span></div>
+        <div class="status-line"><span>Motor</span><span>${motor.running ? 'running' : 'idle'} · ${fixed(motor.rpm,0)} / ${fixed(motor.target_rpm,0)} RPM</span></div>
+        <div class="status-line"><span>Travel / pattern</span><span>${fixed(motor.distance_rev,2)} rev · ${motor.mode || 'idle'}</span></div>`;
+    }
+    function renderOrientation(id, board) {
+      const panel = document.querySelector(`[data-orientation-board="${id}"]`);
+      if (!panel) return;
+      const imu = board.imu || {};
+      panel.querySelector('[data-orientation="heading"]').textContent = fixed(imu.heading, 1);
+      panel.querySelector('[data-orientation="roll"]').textContent = fixed(imu.roll, 1);
+      panel.querySelector('[data-orientation="pitch"]').textContent = fixed(imu.pitch, 1);
+      panel.querySelector('[data-orientation="accel"]').textContent = vec(imu.accel);
+      panel.querySelector('[data-orientation="gyro"]').textContent = vec(imu.gyro);
+      panel.querySelector('[data-orientation="temperature"]').textContent = `${fixed(imu.temperature_c, 0)} °C`;
+    }
+    function render(state) {
+      const boards = state.boards || {};
+      const ids = boardIds.filter((id) => boards[id]);
+      $('connectionText').textContent = ids.map((id) => `${id}: ${boards[id].connected ? 'connected' : 'offline'}`).join(' · ');
+      $('connectionDot').classList.toggle('good', !!state.connected);
+      ids.forEach((id) => {
+        renderOverview(id, boards[id]);
+        renderOrientation(id, boards[id]);
+        const panel = document.querySelector(`[data-command-board="${id}"]`);
+        const motor = boards[id].motor || {};
+        const total = Number(motor.target_steps) || 0;
+        const current = Math.abs(Number(motor.position_steps) || 0);
+        if (panel) panel.querySelector('[data-progress]').style.width = total ? `${Math.min(100, current / total * 100)}%` : '0%';
+      });
+      $('peerToggle').dataset.enabled = state.peer && state.peer.enabled ? 'true' : 'false';
+      $('peerToggle').textContent = state.peer && state.peer.enabled ? 'Disable peer relay' : 'Enable peer relay';
+      $('peerIntensity').value = state.peer ? Number(state.peer.target_fraction || 0.5) : 0.5;
+      $('peerIntensityValue').textContent = Number($('peerIntensity').value).toFixed(2);
+      $('peer').textContent = state.peer && state.peer.enabled ? 'enabled' : 'off';
+      $('peerGain').textContent = state.peer ? `${fixed(state.peer.source_response_gain, 1)}×` : '—';
+      $('sourceA').textContent = formatSource(state.peer?.sources?.['egg-a']);
+      $('sourceB').textContent = formatSource(state.peer?.sources?.['egg-b']);
+      $('peerCommands').textContent = state.peer?.last_commands ? Object.keys(state.peer.last_commands).length : '—';
+    }
+    function formatSource(source) {
+      if (!source) return '—';
+      return `${source.active ? 'active' : 'idle'} · ${fixed(source.intensity, 2)}`;
+    }
+    async function refresh() {
+      try {
+        const r = await fetch('/api/state', {cache:'no-store'});
+        const state = await r.json();
+        render(state);
+      } catch(e) { $('connectionText').textContent='Bridge unavailable'; $('connectionDot').classList.remove('good'); }
+    }
+    refresh(); setInterval(refresh, 100);
+  </script>
+</body>
+</html>

@@ -58,6 +58,18 @@
     .board-card { background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:14px; }
     .board-card h3 { margin:0 0 10px; font-size:14px; display:flex; justify-content:space-between; }
     .board-card .status-line { padding:6px 0; }
+    .command-grid { grid-column:1 / -1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+    .orientation-grid { grid-column:1 / -1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+    .peer-panel { grid-column:1 / -1; }
+    .peer-controls { display:grid; grid-template-columns:1fr 1fr auto; gap:16px; align-items:end; }
+    .peer-status { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:16px; }
+    .peer-status .metric { min-height:64px; }
+    .plot-grid { grid-column:1 / -1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+    .plot-panel canvas { width:100%; height:220px; display:block; background:#101720; border-radius:11px; }
+    .plot-legend { display:flex; gap:12px; flex-wrap:wrap; color:var(--muted); font-size:11px; margin-top:9px; }
+    .plot-legend i { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:4px; }
+    .interlink { grid-column:1 / -1; display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px; }
+    @media (max-width:1000px) { .command-grid,.orientation-grid { grid-template-columns:1fr; } .peer-controls { grid-template-columns:1fr; } }
     @media (max-width:1000px) { .grid { grid-template-columns:1fr 1fr; } .wide { grid-column:span 2; } }
     @media (max-width:650px) { .wrap{padding:16px} header{display:block} .connection{margin-top:14px} .grid{display:block} .panel{margin-bottom:14px} }
   </style>
@@ -74,125 +86,136 @@
         <div class="board-card" id="egg-a-overview"><h3>egg-a <span class="pill">waiting</span></h3><div class="status-line"><span>IMU</span><span>—</span></div><div class="status-line"><span>Motor</span><span>—</span></div></div>
         <div class="board-card" id="egg-b-overview"><h3>egg-b <span class="pill">waiting</span></h3><div class="status-line"><span>IMU</span><span>—</span></div><div class="status-line"><span>Motor</span><span>—</span></div></div>
       </article>
-      <article class="panel">
-        <h2>Motion command <span>step / dir</span></h2>
-        <div class="controls">
-          <div class="field"><label for="pattern">Movement pattern</label><select id="pattern"><option value="distance">Run distance</option><option value="sustain">Sustain rocking</option><option value="once">Rock once, auto-stop</option><option value="peer">Peer × intensity</option></select></div>
-          <div class="field"><label for="rpm">Peak speed <span class="range-value"><b id="rpmValue">60</b> RPM</span></label><input id="rpm" type="range" min="1" max="240" step="1" value="60"></div>
-          <div class="field"><label for="accelCmd">Acceleration <span class="range-value"><b id="accelValue">60</b> RPM/s</span></label><input id="accelCmd" type="range" min="1" max="120" step="1" value="60"></div>
-          <div class="field"><label for="distance">Distance <span class="range-value">revolutions</span></label><input id="distance" type="number" min="0" step="0.01" value="1"></div>
-          <div class="field"><label for="amplitude">Rock amplitude <span class="range-value">one-way revolutions</span></label><input id="amplitude" type="number" min="0.01" step="0.01" value="0.25"></div>
-          <div class="field"><label for="cycles">Auto-stop cycles <span class="range-value">0 = continuous</span></label><input id="cycles" type="number" min="0" step="1" value="2"></div>
-          <div class="field"><label for="peerIntensity">Peer intensity <span class="range-value"><b id="peerIntensityValue">0.50</b></span></label><input id="peerIntensity" type="range" min="0.05" max="1" step="0.05" value="0.5"></div>
-          <div class="field"><label>Direction</label><div class="seg"><button class="secondary dir active" data-dir="1">Clockwise</button><button class="secondary dir" data-dir="-1">Counter-clockwise</button></div></div>
-          <div class="actions"><button class="primary" id="run">Run distance</button><button class="secondary" id="stop">Stop</button><button class="danger" id="estop">Emergency stop</button></div>
-          <div class="actions"><button class="secondary" id="clearEstop">Clear e-stop</button><button class="secondary" id="tare">Tare IMU</button></div>
+      <section class="command-grid">
+        <article class="panel" data-command-board="egg-a">
+          <h2>Motion command 1 <span>egg-a · step / dir</span></h2>
+          <div class="controls">
+            <div class="field"><label>Movement mode</label><select data-field="mode"><option value="distance">One-way rotation to distance</option><option value="smooth_distance">Smooth distance (ramp down)</option><option value="rock_once">Rock once (back and forth)</option><option value="balanced_rock">Balanced rock (brake each reversal)</option><option value="stable_forever">Self-stabilizing wobble (forever)</option></select></div>
+            <div class="field"><label>Distance <span class="range-value">shaft revolutions</span></label><input data-field="distance" type="number" min="0" step="0.01" value="1"></div>
+            <div class="field"><label>Rock amplitude <span class="range-value">one-way revolutions</span></label><input data-field="amplitude" type="number" min="0.01" step="0.01" value="0.25"></div>
+            <div class="field"><label>Peak speed <span class="range-value"><b data-value="rpm">30</b> RPM</span></label><input data-field="rpm" type="range" min="1" max="240" value="30"></div>
+            <div class="field"><label>Acceleration <span class="range-value"><b data-value="accel">20</b> RPM/s</span></label><input data-field="accel" type="range" min="1" max="120" value="20"></div>
+            <div class="field"><label>Direction</label><select data-field="direction"><option value="1">Clockwise</option><option value="-1">Counter-clockwise</option></select></div>
+            <div class="actions"><button class="primary" data-action="run">Run distance</button><button class="secondary" data-action="stop">Stop</button><button class="secondary" data-action="tare">Tare IMU</button><button class="secondary" data-action="set_origin">Record upright origin</button><button class="primary" data-action="return_origin">Return clockwise to origin</button><button class="danger" data-action="estop">Stop immediately</button></div>
+          </div>
+          <div class="status-line"><span>Motor origin</span><span data-origin-status>not recorded</span></div>
+          <div class="progress"><div data-progress></div></div>
+          <div class="error" data-error></div>
+        </article>
+        <article class="panel" data-command-board="egg-b">
+          <h2>Motion command 2 <span>egg-b · step / dir</span></h2>
+          <div class="controls">
+            <div class="field"><label>Movement mode</label><select data-field="mode"><option value="distance">One-way rotation to distance</option><option value="smooth_distance">Smooth distance (ramp down)</option><option value="rock_once">Rock once (back and forth)</option><option value="balanced_rock">Balanced rock (brake each reversal)</option><option value="stable_forever">Self-stabilizing wobble (forever)</option></select></div>
+            <div class="field"><label>Distance <span class="range-value">shaft revolutions</span></label><input data-field="distance" type="number" min="0" step="0.01" value="1"></div>
+            <div class="field"><label>Rock amplitude <span class="range-value">one-way revolutions</span></label><input data-field="amplitude" type="number" min="0.01" step="0.01" value="0.25"></div>
+            <div class="field"><label>Peak speed <span class="range-value"><b data-value="rpm">30</b> RPM</span></label><input data-field="rpm" type="range" min="1" max="240" value="30"></div>
+            <div class="field"><label>Acceleration <span class="range-value"><b data-value="accel">20</b> RPM/s</span></label><input data-field="accel" type="range" min="1" max="120" value="20"></div>
+            <div class="field"><label>Direction</label><select data-field="direction"><option value="1">Clockwise</option><option value="-1">Counter-clockwise</option></select></div>
+            <div class="actions"><button class="primary" data-action="run">Run distance</button><button class="secondary" data-action="stop">Stop</button><button class="secondary" data-action="tare">Tare IMU</button><button class="secondary" data-action="set_origin">Record upright origin</button><button class="primary" data-action="return_origin">Return clockwise to origin</button><button class="danger" data-action="estop">Stop immediately</button></div>
+          </div>
+          <div class="status-line"><span>Motor origin</span><span data-origin-status>not recorded</span></div>
+          <div class="progress"><div data-progress></div></div>
+          <div class="error" data-error></div>
+        </article>
+      </section>
+
+      <section class="orientation-grid">
+        <article class="panel" data-orientation-board="egg-a"><h2>Orientation 1 <span>egg-a · relative to tare</span></h2><div class="metrics"><div class="metric"><label>Heading / yaw</label><strong data-orientation="heading">—</strong><span class="unit">°</span></div><div class="metric"><label>Roll</label><strong data-orientation="roll">—</strong><span class="unit">°</span></div><div class="metric"><label>Pitch</label><strong data-orientation="pitch">—</strong><span class="unit">°</span></div></div><div class="status-line"><span>Accel X / Y / Z</span><span data-orientation="accel">—</span></div><div class="status-line"><span>Gyro X / Y / Z</span><span data-orientation="gyro">—</span></div><div class="status-line"><span>Temperature</span><span data-orientation="temperature">—</span></div></article>
+        <article class="panel" data-orientation-board="egg-b"><h2>Orientation 2 <span>egg-b · relative to tare</span></h2><div class="metrics"><div class="metric"><label>Heading / yaw</label><strong data-orientation="heading">—</strong><span class="unit">°</span></div><div class="metric"><label>Roll</label><strong data-orientation="roll">—</strong><span class="unit">°</span></div><div class="metric"><label>Pitch</label><strong data-orientation="pitch">—</strong><span class="unit">°</span></div></div><div class="status-line"><span>Accel X / Y / Z</span><span data-orientation="accel">—</span></div><div class="status-line"><span>Gyro X / Y / Z</span><span data-orientation="gyro">—</span></div><div class="status-line"><span>Temperature</span><span data-orientation="temperature">—</span></div></article>
+      </section>
+
+      <section class="plot-grid">
+        <article class="panel plot-panel">
+          <h2>Wobble angle history <span>relative IMU roll / pitch</span></h2>
+          <canvas id="anglePlot" width="640" height="220"></canvas>
+          <div class="plot-legend"><span><i style="background:#63e6e2"></i>Egg A pitch</span><span><i style="background:#ffc857"></i>Egg B pitch</span><span><i style="background:#69db9a"></i>Egg A roll</span><span><i style="background:#ff8fab"></i>Egg B roll</span></div>
+        </article>
+        <article class="panel plot-panel">
+          <h2>IMU interlink <span>motion magnitude and board relationship</span></h2>
+          <canvas id="imuPlot" width="640" height="220"></canvas>
+          <div class="plot-legend"><span><i style="background:#63e6e2"></i>Egg A gyro</span><span><i style="background:#ffc857"></i>Egg B gyro</span><span><i style="background:#69db9a"></i>Egg A dynamic accel</span><span><i style="background:#ff8fab"></i>Egg B dynamic accel</span></div>
+          <div class="interlink"><div class="metric"><label>Pitch delta</label><strong id="pitchDelta">—</strong><span class="unit">°</span></div><div class="metric"><label>Roll delta</label><strong id="rollDelta">—</strong><span class="unit">°</span></div><div class="metric"><label>Gyro delta</label><strong id="gyroDelta">—</strong><span class="unit">dps</span></div></div>
+        </article>
+      </section>
+
+      <article class="panel peer-panel">
+        <h2>Peer mode <span>optional laptop-relayed coordination</span></h2>
+        <div class="peer-controls">
+          <div class="field"><label for="peerIntensity">Follower intensity <span class="range-value"><b id="peerIntensityValue">0.50</b></span></label><input id="peerIntensity" type="range" min="0.05" max="1" step="0.05" value="0.5"></div>
+          <div><div class="status-line"><span>Relay status</span><span id="peer">off</span></div><div class="status-line"><span>Response gain</span><span id="peerGain">—</span></div></div>
+          <button class="primary" id="peerToggle">Enable peer relay</button>
         </div>
-        <div class="progress"><div id="progressBar"></div></div>
-        <div class="note">Distance = motor shaft revolutions. A value of 0 is continuous until Stop. Actual microstep count must match the driver jumpers.</div>
-        <div class="error" id="error"></div>
-      </article>
-
-      <article class="panel wide">
-        <h2>Orientation <span>relative to tare</span></h2>
-        <div class="metrics">
-          <div class="metric"><label>Heading / yaw</label><strong id="heading">—</strong><span class="unit">°</span></div>
-          <div class="metric"><label>Roll</label><strong id="roll">—</strong><span class="unit">°</span></div>
-          <div class="metric"><label>Pitch</label><strong id="pitch">—</strong><span class="unit">°</span></div>
-        </div>
-        <div style="height:16px"></div>
-        <canvas id="chart" width="900" height="280"></canvas>
-        <div class="legend"><span><i style="background:#63e6e2"></i>heading</span><span><i style="background:#ffc857"></i>roll</span><span><i style="background:#ff8fab"></i>pitch</span></div>
-      </article>
-
-      <article class="panel">
-        <h2>Motor state</h2>
-        <div class="status-line"><span>State</span><span class="pill" id="motorState">idle</span></div>
-        <div class="status-line"><span>Speed / target</span><span id="motorRpm">0 / 0 RPM</span></div>
-        <div class="status-line"><span>Acceleration</span><span id="motorAccel">0 RPM/s</span></div>
-        <div class="status-line"><span>Pattern</span><span id="motorMode">idle</span></div>
-        <div class="status-line"><span>Travel</span><span id="travel">0.00 rev</span></div>
-        <div class="status-line"><span>Target</span><span id="target">continuous</span></div>
-        <div class="status-line"><span>Calibration</span><span id="calibration">—</span></div>
-      </article>
-
-      <article class="panel">
-        <h2>Motion sensors <span>SI units</span></h2>
-        <div class="status-line"><span>Accel X / Y / Z</span><span id="accel">—</span></div>
-        <div class="status-line"><span>Gyro X / Y / Z</span><span id="gyro">—</span></div>
-        <div class="status-line"><span>Temperature</span><span id="temperature">—</span></div>
-        <div class="note">IMU: acceleration in m/s² · angular rate in °/s</div>
-      </article>
-
-      <article class="panel">
-        <h2>Connection</h2>
-        <div class="field"><label for="boardSelect">Active egg</label><select id="boardSelect"></select></div>
-        <div class="actions"><button class="primary" id="peerToggle">Enable peer relay</button></div>
-        <div class="status-line"><span>Serial port</span><span id="port">—</span></div>
-        <div class="status-line"><span>Sensor</span><span id="sensor">—</span></div>
-        <div class="status-line"><span>Peer relay</span><span id="peer">—</span></div>
-        <div class="status-line"><span>Peer source gyro</span><span id="sourceGyro">—</span></div>
-        <div class="status-line"><span>Dynamic acceleration</span><span id="sourceAccel">—</span></div>
-        <div class="status-line"><span>Detected motion</span><span id="sourceActive">—</span></div>
-        <div class="status-line"><span>Last packet</span><span id="lastPacket">—</span></div>
-        <div class="note">This page talks only to the local bridge at 127.0.0.1.</div>
+        <div class="peer-status"><div class="metric"><label>Egg A source</label><strong id="sourceA">—</strong></div><div class="metric"><label>Egg B source</label><strong id="sourceB">—</strong></div><div class="metric"><label>Last peer commands</label><strong id="peerCommands">—</strong></div></div>
+        <div class="note">Record origin only while the selected egg is physically upright and stopped. Return uses clockwise travel only and preserves the IMU tare separately. Each motion command targets its own egg.</div>
       </article>
     </section>
   </main>
   <script>
     const $ = (id) => document.getElementById(id);
-    const series = { heading: [], roll: [], pitch: [] }, maxPoints = 900;
-    let lastSampleSeq = 0;
-    let direction = 1;
-    let selectedBoard = null;
-    $('boardSelect').addEventListener('change', () => {
-      selectedBoard = $('boardSelect').value;
-      lastSampleSeq = 0;
-      series.heading.length = 0; series.roll.length = 0; series.pitch.length = 0;
+    const boardIds = ['egg-a', 'egg-b'];
+    document.querySelectorAll('[data-command-board]').forEach((panel) => {
+      const board = panel.dataset.commandBoard;
+      panel.querySelector('[data-field="rpm"]').addEventListener('input', (event) => {
+        panel.querySelector('[data-value="rpm"]').textContent = event.target.value;
+      });
+      panel.querySelector('[data-field="accel"]').addEventListener('input', (event) => {
+        panel.querySelector('[data-value="accel"]').textContent = event.target.value;
+      });
+      panel.querySelectorAll('[data-action]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const action = button.dataset.action;
+          const command = {board, cmd: action};
+          if (action === 'run') {
+            const mode = panel.querySelector('[data-field="mode"]').value;
+            const common = {
+              rpm: Number(panel.querySelector('[data-field="rpm"]').value),
+              accel: Number(panel.querySelector('[data-field="accel"]').value),
+              direction: Number(panel.querySelector('[data-field="direction"]').value)
+            };
+            if (mode === 'rock_once' || mode === 'balanced_rock' || mode === 'stable_forever') {
+              Object.assign(command, common, {
+                cmd: mode === 'stable_forever' ? 'stable_rock' : (mode === 'balanced_rock' ? 'smooth_rock' : 'rock'),
+                amplitude_rev: Number(panel.querySelector('[data-field="amplitude"]').value),
+                cycles: mode === 'stable_forever' ? 0 : 1,
+                max_tilt_deg: 15
+              });
+            } else {
+              Object.assign(command, common, {
+                cmd: mode === 'smooth_distance' ? 'smooth_run' : 'run',
+                distance_rev: Number(panel.querySelector('[data-field="distance"]').value)
+              });
+            }
+          }
+          sendCommand(command, panel.querySelector('[data-error]'));
+        });
+      });
     });
-    document.querySelectorAll('.dir').forEach((button) => button.addEventListener('click', () => {
-      direction = Number(button.dataset.dir);
-      document.querySelectorAll('.dir').forEach((b) => b.classList.toggle('active', b === button));
-    }));
-    $('rpm').addEventListener('input', () => $('rpmValue').textContent = $('rpm').value);
-    $('accelCmd').addEventListener('input', () => $('accelValue').textContent = $('accelCmd').value);
     $('peerIntensity').addEventListener('input', () => $('peerIntensityValue').textContent = Number($('peerIntensity').value).toFixed(2));
     $('peerIntensity').addEventListener('change', () => {
       fetch('/api/peer', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({target_fraction: Number($('peerIntensity').value)})
-      }).catch((error) => $('error').textContent = error.message);
+      }).catch((error) => document.querySelector('.peer-panel .note').textContent = error.message);
     });
     $('peerToggle').addEventListener('click', () => {
       fetch('/api/peer', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({enabled: $('peerToggle').dataset.enabled !== 'true'})
-      }).catch((error) => $('error').textContent = error.message);
+      }).catch((error) => document.querySelector('.peer-panel .note').textContent = error.message);
     });
 
-    async function command(cmd) {
-      $('error').textContent = '';
+    async function sendCommand(command, errorElement) {
+      errorElement.textContent = '';
       try {
-        if (selectedBoard) cmd = {...cmd, board: selectedBoard};
-        const response = await fetch('/api/command', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(cmd) });
+        const response = await fetch('/api/command', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(command)});
         const body = await response.json();
-        if (!body.ok) $('error').textContent = body.error || 'Command failed';
-      } catch (error) { $('error').textContent = error.message; }
+        if (!body.ok) errorElement.textContent = body.error || 'Command failed';
+      } catch (error) {
+        errorElement.textContent = error.message;
+      }
     }
-    $('run').onclick = () => {
-      const pattern = $('pattern').value;
-      const common = {rpm:Number($('rpm').value), accel:Number($('accelCmd').value), direction};
-      if (pattern === 'distance') command({...common, cmd:'run', distance_rev:Number($('distance').value)});
-      if (pattern === 'sustain') command({...common, cmd:'rock', amplitude_rev:Number($('amplitude').value), cycles:0});
-      if (pattern === 'once') command({...common, cmd:'rock', amplitude_rev:Number($('amplitude').value), cycles:Number($('cycles').value)});
-      if (pattern === 'peer') command({...common, cmd:'peer_rock', amplitude_rev:Number($('amplitude').value), cycles:0, intensity:Number($('peerIntensity').value)});
-    };
-    $('stop').onclick = () => command({cmd:'stop'});
-    $('estop').onclick = () => command({cmd:'estop'});
-    $('clearEstop').onclick = () => command({cmd:'clear_estop'});
-    $('tare').onclick = () => command({cmd:'tare'});
 
     function fixed(value, digits=2) { return Number.isFinite(Number(value)) ? Number(value).toFixed(digits) : '—'; }
     function vec(v) { return v ? `${fixed(v.x)} / ${fixed(v.y)} / ${fixed(v.z)}` : '—'; }
@@ -205,87 +228,106 @@
       card.innerHTML = `<h3>${id} <span class="${pillClass}">${state}</span></h3>
         <div class="status-line"><span>Heading / roll / pitch</span><span>${fixed(imu.heading,1)}° / ${fixed(imu.roll,1)}° / ${fixed(imu.pitch,1)}°</span></div>
         <div class="status-line"><span>Gyro X / Y / Z</span><span>${vec(imu.gyro)} °/s</span></div>
-        <div class="status-line"><span>Motor</span><span>${motor.estopped ? 'e-stop' : (motor.running ? 'running' : 'idle')} · ${fixed(motor.rpm,0)} / ${fixed(motor.target_rpm,0)} RPM</span></div>
+        <div class="status-line"><span>Motor</span><span>${motor.running ? 'running' : 'idle'} · ${fixed(motor.rpm,0)} / ${fixed(motor.target_rpm,0)} RPM</span></div>
         <div class="status-line"><span>Travel / pattern</span><span>${fixed(motor.distance_rev,2)} rev · ${motor.mode || 'idle'}</span></div>`;
     }
-    function addSample(sample) {
-      ['heading','roll','pitch'].forEach((key) => {
-        series[key].push(Number(sample[key]) || 0);
-        if (series[key].length > maxPoints) series[key].shift();
-      });
+    function renderOrientation(id, board) {
+      const panel = document.querySelector(`[data-orientation-board="${id}"]`);
+      if (!panel) return;
+      const imu = board.imu || {};
+      panel.querySelector('[data-orientation="heading"]').textContent = fixed(imu.heading, 1);
+      panel.querySelector('[data-orientation="roll"]').textContent = fixed(imu.roll, 1);
+      panel.querySelector('[data-orientation="pitch"]').textContent = fixed(imu.pitch, 1);
+      panel.querySelector('[data-orientation="accel"]').textContent = vec(imu.accel);
+      panel.querySelector('[data-orientation="gyro"]').textContent = vec(imu.gyro);
+      panel.querySelector('[data-orientation="temperature"]').textContent = `${fixed(imu.temperature_c, 0)} °C`;
     }
     function render(state) {
-      const multi = state.boards && Object.keys(state.boards).length;
-      const ids = multi ? Object.keys(state.boards) : [];
-      if (multi && (!selectedBoard || !ids.includes(selectedBoard))) selectedBoard = ids[0];
-      if (multi) {
-        $('boardSelect').innerHTML = ids.map((id) => `<option value="${id}">${id}</option>`).join('');
-        $('boardSelect').value = selectedBoard;
-      }
-      const boardId = multi ? selectedBoard : null;
-      const board = multi ? state.boards[boardId] : state;
-      if (multi) ids.forEach((id) => renderOverview(id, state.boards[id]));
-      if (multi) {
-        window.selectedBoard = boardId;
-        $('connectionText').textContent = Object.entries(state.boards).map(([id, item]) => `${id}: ${item.connected ? 'connected' : 'offline'}`).join(' · ');
-      }
-      const stateForCommand = multi ? boardId : null;
-      const imu = state.imu || {}, motor = state.motor || {};
-      const activeState = board;
-      const activeImu = activeState.imu || {}, activeMotor = activeState.motor || {};
+      const boards = state.boards || {};
+      const ids = boardIds.filter((id) => boards[id]);
+      $('connectionText').textContent = ids.map((id) => `${id}: ${boards[id].connected ? 'connected' : 'offline'}`).join(' · ');
       $('connectionDot').classList.toggle('good', !!state.connected);
-      if (!multi) $('connectionText').textContent = state.connected ? (state.sensor_found ? 'Connected / streaming' : 'ESP32 connected / IMU missing') : 'Disconnected';
-      $('heading').textContent = fixed(activeImu.heading, 1); $('roll').textContent = fixed(activeImu.roll, 1); $('pitch').textContent = fixed(activeImu.pitch, 1);
-      $('motorState').textContent = activeMotor.estopped ? 'e-stop' : (activeMotor.running ? 'running' : 'idle');
-      $('motorState').className = `pill ${activeMotor.estopped ? 'bad' : (activeMotor.running ? 'good' : '')}`;
-      $('motorRpm').textContent = `${fixed(activeMotor.rpm, 0)} / ${fixed(activeMotor.target_rpm, 0)} RPM`;
-      $('motorAccel').textContent = `${fixed(activeMotor.accel_rpm_s, 0)} RPM/s`;
-      $('motorMode').textContent = activeMotor.mode || 'idle';
-      $('travel').textContent = `${fixed(activeMotor.distance_rev, 2)} rev`;
-      $('target').textContent = activeMotor.target_steps ? `${fixed(activeMotor.target_steps / (activeMotor.steps_per_rev || 3200), 2)} rev` : (activeMotor.amplitude_rev ? `±${fixed(activeMotor.amplitude_rev, 2)} rev` : 'continuous');
-      const cal = activeImu.calibration;
-      $('calibration').textContent = cal && typeof cal === 'object' ? `S${cal.sys} G${cal.gyro} A${cal.accel} M${cal.mag}` : '—';
-      $('accel').textContent = vec(activeImu.accel); $('gyro').textContent = vec(activeImu.gyro);
-      $('temperature').textContent = `${fixed(activeImu.temperature_c, 0)} °C`;
-      $('port').textContent = activeState.port || '—'; $('sensor').textContent = activeState.sensor || '—';
-      $('peer').textContent = state.peer ? (state.peer.enabled ? 'enabled' : 'off') : '—';
-      const sourceId = multi ? ids.find((id) => id !== boardId) : boardId;
-      const source = state.peer && state.peer.sources ? state.peer.sources[sourceId] : null;
-      $('sourceGyro').textContent = source ? `${fixed(source.gyro_dps, 1)} °/s` : '—';
-      $('sourceAccel').textContent = source ? `${fixed(source.dynamic_accel_mps2, 2)} m/s²` : '—';
-      $('sourceActive').textContent = source ? (source.active ? `yes (${fixed(source.intensity, 2)})` : 'no') : '—';
+      ids.forEach((id) => {
+        renderOverview(id, boards[id]);
+        renderOrientation(id, boards[id]);
+        const panel = document.querySelector(`[data-command-board="${id}"]`);
+        const motor = boards[id].motor || {};
+        if (panel) panel.querySelector('[data-origin-status]').textContent =
+          motor.origin_recorded ? `recorded · ${fixed(motor.origin_steps, 0)} steps` : 'not recorded';
+        const total = Number(motor.target_steps) || 0;
+        const current = Math.abs(Number(motor.position_steps) || 0);
+        if (panel) panel.querySelector('[data-progress]').style.width = total ? `${Math.min(100, current / total * 100)}%` : '0%';
+      });
       $('peerToggle').dataset.enabled = state.peer && state.peer.enabled ? 'true' : 'false';
       $('peerToggle').textContent = state.peer && state.peer.enabled ? 'Disable peer relay' : 'Enable peer relay';
       $('peerIntensity').value = state.peer ? Number(state.peer.target_fraction || 0.5) : 0.5;
       $('peerIntensityValue').textContent = Number($('peerIntensity').value).toFixed(2);
-      $('lastPacket').textContent = activeState.last_rx ? new Date(activeState.last_rx * 1000).toLocaleTimeString() : '—';
-      if (activeState.last_error) $('error').textContent = activeState.last_error;
-      const total = Number(activeMotor.target_steps) || 0, current = Math.abs(Number(activeMotor.position_steps) || 0);
-      $('progressBar').style.width = total ? `${Math.min(100, current / total * 100)}%` : (activeMotor.running ? '100%' : '0%');
-      drawChart();
+      $('peer').textContent = state.peer && state.peer.enabled ? 'enabled' : 'off';
+      $('peerGain').textContent = state.peer ? `${fixed(state.peer.source_response_gain, 1)}×` : '—';
+      $('sourceA').textContent = formatSource(state.peer?.sources?.['egg-a']);
+      $('sourceB').textContent = formatSource(state.peer?.sources?.['egg-b']);
+      $('peerCommands').textContent = state.peer?.last_commands ? Object.keys(state.peer.last_commands).length : '—';
+      renderPlots(state);
     }
-    function drawChart() {
-      const canvas = $('chart'), ctx = canvas.getContext('2d'), w = canvas.width, h = canvas.height;
-      ctx.clearRect(0,0,w,h); ctx.fillStyle='#101720'; ctx.fillRect(0,0,w,h);
-      ctx.strokeStyle='#263442'; ctx.lineWidth=1;
-      for (let i=1;i<5;i++) { const y=i*h/5; ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke(); }
-      const all = [].concat(series.heading,series.roll,series.pitch), spread = Math.max(12, ...all.map(v => Math.abs(v))); const mid=h/2;
-      [['heading','#63e6e2'],['roll','#ffc857'],['pitch','#ff8fab']].forEach(([key,color]) => { const data=series[key]; const n=Math.max(2,data.length); ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath(); data.forEach((v,i)=>{const x=i*(w/(n-1)),y=mid-v/spread*(h*.42);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke(); });
+    function formatSource(source) {
+      if (!source) return '—';
+      return `${source.active ? 'active' : 'idle'} · ${fixed(source.intensity, 2)}`;
+    }
+    const plotHistory = {angle: { 'egg-a': [], 'egg-b': [] }, imu: { 'egg-a': [], 'egg-b': [] }};
+    function pushHistory(state) {
+      ['egg-a', 'egg-b'].forEach((id) => {
+        const board = (state.boards || {})[id];
+        if (!board || !board.imu) return;
+        const imu = board.imu;
+        const accel = imu.accel || {};
+        const gyro = imu.gyro || {};
+        const gyroMagnitude = Math.hypot(Number(gyro.x) || 0, Number(gyro.y) || 0, Number(gyro.z) || 0);
+        const accelMagnitude = Math.hypot(Number(accel.x) || 0, Number(accel.y) || 0, Number(accel.z) || 0);
+        const sample = {
+          pitch: Number(imu.pitch) || 0, roll: Number(imu.roll) || 0,
+          gyro: gyroMagnitude, dynamicAccel: Math.abs(accelMagnitude - 9.80665)
+        };
+        plotHistory.angle[id].push({pitch: sample.pitch, roll: sample.roll});
+        plotHistory.imu[id].push({gyro: sample.gyro, dynamicAccel: sample.dynamicAccel});
+        if (plotHistory.angle[id].length > 180) plotHistory.angle[id].shift();
+        if (plotHistory.imu[id].length > 180) plotHistory.imu[id].shift();
+      });
+    }
+    function drawPlot(canvasId, series, maxAbs, colors) {
+      const canvas = $(canvasId), ctx = canvas.getContext('2d'), w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h); ctx.fillStyle = '#101720'; ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = '#2a3746'; ctx.lineWidth = 1;
+      for (let i = 1; i < 4; i++) { const y = h * i / 4; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+      const values = Object.values(series).flatMap(items => items.flatMap(sample => Object.values(sample)));
+      const scale = Math.max(maxAbs, ...values.map(value => Math.abs(value)), 1);
+      Object.entries(series).forEach(([id, items]) => Object.keys(items[0] || {}).forEach((key, keyIndex) => {
+        if (!items.length) return;
+        ctx.strokeStyle = colors[id][keyIndex]; ctx.lineWidth = 2; ctx.beginPath();
+        items.forEach((sample, index) => {
+          const x = index * w / 179, y = h / 2 - (sample[key] / scale) * (h * 0.42);
+          index ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+        }); ctx.stroke();
+      }));
+      ctx.strokeStyle = '#8d9bad'; ctx.beginPath(); ctx.moveTo(0,h/2); ctx.lineTo(w,h/2); ctx.stroke();
+    }
+    function renderPlots(state) {
+      pushHistory(state);
+      drawPlot('anglePlot', plotHistory.angle, 30, {'egg-a':['#63e6e2','#69db9a'], 'egg-b':['#ffc857','#ff8fab']});
+      drawPlot('imuPlot', plotHistory.imu, 20, {'egg-a':['#63e6e2','#69db9a'], 'egg-b':['#ffc857','#ff8fab']});
+      const a = (state.boards || {})['egg-a']?.imu || {}, b = (state.boards || {})['egg-b']?.imu || {};
+      $('pitchDelta').textContent = fixed(Math.abs((Number(a.pitch)||0) - (Number(b.pitch)||0)), 1);
+      $('rollDelta').textContent = fixed(Math.abs((Number(a.roll)||0) - (Number(b.roll)||0)), 1);
+      const ag = a.gyro || {}, bg = b.gyro || {};
+      $('gyroDelta').textContent = fixed(Math.abs(Math.hypot(ag.x||0,ag.y||0,ag.z||0) - Math.hypot(bg.x||0,bg.y||0,bg.z||0)), 1);
     }
     async function refresh() {
       try {
-        const r = await fetch(`/api/state?since=${lastSampleSeq}`, {cache:'no-store'});
+        const r = await fetch('/api/state', {cache:'no-store'});
         const state = await r.json();
-        const sampleState = state.boards ? state.boards[selectedBoard || Object.keys(state.boards)[0]] : state;
-        (sampleState.samples || []).forEach((sample) => {
-          addSample(sample);
-          lastSampleSeq = Math.max(lastSampleSeq, Number(sample.seq) || 0);
-        });
-        if (!lastSampleSeq) addSample(sampleState.imu || {});
         render(state);
       } catch(e) { $('connectionText').textContent='Bridge unavailable'; $('connectionDot').classList.remove('good'); }
     }
-    refresh(); setInterval(refresh, 50); drawChart();
+    refresh(); setInterval(refresh, 100);
   </script>
 </body>
 </html>

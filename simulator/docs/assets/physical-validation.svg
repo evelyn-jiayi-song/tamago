@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="560" viewBox="0 0 1100 560">
+  <style>
+    .bg{fill:#0e1218}.axis{stroke:#8d9bad;stroke-width:1}.grid{stroke:#2a3746;stroke-width:1}
+    .txt{fill:#e9eef4;font:15px sans-serif}.small{fill:#b7c2cf;font:12px sans-serif}
+    .bar{fill:#63e6e2}.bar2{fill:#ffc857}.label{fill:#e9eef4;font:12px sans-serif}
+  </style>
+  <rect width="1100" height="560" class="bg"/>
+  <text x="45" y="38" class="txt" font-size="23">Physical commissioning evidence</text>
+  <text x="45" y="62" class="small">Recorded unloaded-board tests from wired_tests/physical_test_log.md</text>
+  <text x="55" y="110" class="txt">A. Commanded travel reached target</text>
+  <line x1="75" y1="425" x2="510" y2="425" class="axis"/>
+  <line x1="75" y1="125" x2="75" y2="425" class="axis"/>
+  <line x1="75" y1="350" x2="510" y2="350" class="grid"/>
+  <line x1="75" y1="275" x2="510" y2="275" class="grid"/>
+  <line x1="75" y1="200" x2="510" y2="200" class="grid"/>
+  <text x="42" y="429" class="small">0</text><text x="28" y="354" class="small">0.25</text>
+  <text x="28" y="279" class="small">0.50</text><text x="28" y="204" class="small">0.75</text>
+  <text x="28" y="129" class="small">1.00</text>
+  <text x="215" y="462" class="small">commanded revolutions</text>
+  <rect x="100" y="425" width="38" height="0" class="bar"/>
+  <rect x="160" y="410" width="38" height="15" class="bar"/>
+  <rect x="220" y="401" width="38" height="24" class="bar"/>
+  <rect x="280" y="401" width="38" height="24" class="bar"/>
+  <rect x="340" y="395" width="38" height="30" class="bar"/>
+  <rect x="400" y="125" width="38" height="300" class="bar"/>
+  <rect x="460" y="125" width="38" height="300" class="bar2"/>
+  <text x="102" y="445" class="label">0.05</text><text x="162" y="445" class="label">0.05</text>
+  <text x="222" y="445" class="label">0.08</text><text x="282" y="445" class="label">0.08</text>
+  <text x="342" y="445" class="label">0.10</text><text x="402" y="445" class="label">1.00</text>
+  <text x="462" y="445" class="label">1.00</text>
+  <text x="100" y="490" class="small">finite</text><text x="160" y="490" class="small">rock</text>
+  <text x="220" y="490" class="small">sustain</text><text x="280" y="490" class="small">reverse</text>
+  <text x="340" y="490" class="small">half</text><text x="400" y="490" class="small">forward</text>
+  <text x="460" y="490" class="small">reverse</text>
+  <text x="600" y="110" class="txt">B. Measured IMU response</text>
+  <line x1="625" y1="425" x2="1040" y2="425" class="axis"/>
+  <line x1="625" y1="125" x2="625" y2="425" class="axis"/>
+  <line x1="625" y1="350" x2="1040" y2="350" class="grid"/>
+  <line x1="625" y1="275" x2="1040" y2="275" class="grid"/>
+  <line x1="625" y1="200" x2="1040" y2="200" class="grid"/>
+  <text x="600" y="429" class="small">0</text><text x="584" y="354" class="small">25</text>
+  <text x="584" y="279" class="small">50</text><text x="584" y="204" class="small">75</text>
+  <text x="584" y="129" class="small">100°/dps</text>
+  <text x="760" y="462" class="small">peak value, mixed angle/dps scale</text>
+  <rect x="650" y="391" width="34" height="34" class="bar2"/><rect x="695" y="384" width="34" height="41" class="bar2"/>
+  <rect x="740" y="372" width="34" height="53" class="bar2"/><rect x="785" y="387" width="34" height="38" class="bar2"/>
+  <rect x="830" y="398" width="34" height="27" class="bar2"/><rect x="875" y="200" width="34" height="225" class="bar2"/>
+  <rect x="920" y="295" width="34" height="130" class="bar2"/>
+  <text x="651" y="445" class="label">4.5</text><text x="696" y="445" class="label">13.7</text>
+  <text x="741" y="445" class="label">17.8</text><text x="786" y="445" class="label">12.8</text>
+  <text x="831" y="445" class="label">9.1</text><text x="876" y="445" class="label">75.6</text>
+  <text x="921" y="445" class="label">43.8</text>
+  <text x="650" y="490" class="small">gyro</text><text x="695" y="490" class="small">gyro</text>
+  <text x="740" y="490" class="small">gyro</text><text x="785" y="490" class="small">gyro</text>
+  <text x="830" y="490" class="small">gyro</text><text x="875" y="490" class="small">pitch</text>
+  <text x="920" y="490" class="small">pitch</text>
+  <text x="45" y="535" class="small">Full-circle tests reached ±3200 software steps; stop latency was measured at approximately 110–113 ms.</text>
+</svg>
