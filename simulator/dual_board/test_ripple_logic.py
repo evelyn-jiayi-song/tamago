@@ -5,6 +5,7 @@ import unittest
 from simulator.dual_board.ripple_logic import (
     FollowerController,
     MotionIntensityFilter,
+    PeerEchoGate,
     ReferencePublisher,
 )
 
@@ -49,7 +50,8 @@ class RippleLogicTests(unittest.TestCase):
                 break
         self.assertIsNotNone(packet)
         self.assertEqual(set(("v", "kind", "source", "seq", "t_ms",
-                              "intensity", "active", "axis", "features")),
+                              "intensity", "active", "axis",
+                              "features")),
                          set(packet))
         self.assertGreaterEqual(packet["intensity"], 0.0)
         self.assertLessEqual(packet["intensity"], 1.0)
@@ -65,8 +67,11 @@ class RippleLogicTests(unittest.TestCase):
         self.assertIsNone(follower.tick(349))
         command = follower.tick(350)
         self.assertEqual(command["cmd"], "rock")
-        self.assertAlmostEqual(command["intensity"], 0.5)
-        self.assertAlmostEqual(command["rpm"], 30.0)
+        self.assertAlmostEqual(command["intensity"], 0.75)
+        self.assertAlmostEqual(command["rpm"], 112.5)
+        self.assertAlmostEqual(command["accel"], 56.25)
+        self.assertAlmostEqual(command["amplitude_rev"], 2.25)
+        self.assertEqual(command["cycles"], 2)
 
     def test_follower_response_gain_is_capped_by_target_fraction(self):
         packet = {
@@ -76,10 +81,12 @@ class RippleLogicTests(unittest.TestCase):
         follower = FollowerController(delay_ms=0, target_fraction=0.5)
         self.assertTrue(follower.receive(packet, 0))
         command = follower.tick(0)
-        self.assertAlmostEqual(command["intensity"], 0.45)
-        self.assertAlmostEqual(command["rpm"], 27.0)
+        self.assertAlmostEqual(command["intensity"], 0.675)
+        self.assertAlmostEqual(command["rpm"], 101.25)
+        self.assertAlmostEqual(command["accel"], 50.625)
+        self.assertAlmostEqual(command["amplitude_rev"], 2.025)
 
-    def test_stop_packet_and_stale_timeout_do_not_issue_motor_stop(self):
+    def test_stop_packet_and_stale_timeout_issue_one_shot_motor_stop(self):
         follower = FollowerController(delay_ms=100, stale_timeout_ms=400)
         motion = {
             "v": 1, "kind": "motion", "source": "A", "seq": 1,
@@ -90,11 +97,25 @@ class RippleLogicTests(unittest.TestCase):
         self.assertEqual(follower.tick(100)["cmd"], "rock")
         follower.receive(stop, 150)
         self.assertIsNone(follower.tick(249))
-        self.assertIsNone(follower.tick(250))
+        stop_command = follower.tick(250)
+        self.assertEqual(stop_command["cmd"], "stop")
+        self.assertIsNone(follower.tick(251))
+        follower.receive(dict(stop, seq=3), 251)
+        self.assertIsNone(follower.tick(351))
         follower = FollowerController(delay_ms=0, stale_timeout_ms=400)
         follower.receive(motion, 0)
         self.assertEqual(follower.tick(0)["cmd"], "rock")
-        self.assertIsNone(follower.tick(401))
+        self.assertEqual(follower.tick(401)["cmd"], "stop")
+        self.assertIsNone(follower.tick(402))
+
+    def test_echo_gate_suppresses_peer_response_then_reopens_after_cooldown(self):
+        gate = PeerEchoGate(reaction_hold_ms=100, stop_cooldown_ms=25)
+        gate.trigger(1000, {"cmd": "rock"})
+        self.assertTrue(gate.is_suppressed(1099))
+        self.assertFalse(gate.is_suppressed(1100))
+        gate.trigger(1100, {"cmd": "stop"})
+        self.assertTrue(gate.is_suppressed(1124))
+        self.assertFalse(gate.is_suppressed(1125))
 
     def test_rejects_wrong_source_old_sequence_and_bad_version(self):
         follower = FollowerController()

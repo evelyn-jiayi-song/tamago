@@ -34,6 +34,7 @@ if str(SIMULATOR_DIR) not in __import__("sys").path:
 
 from dual_board.ripple_logic import (
     FollowerController,
+    PeerEchoGate,
     ReferencePublisher,
     motion_features,
 )
@@ -261,11 +262,22 @@ class MultiSerialBridge:
             left, right = board_ids
             self.followers[left] = FollowerController(source=right)
             self.followers[right] = FollowerController(source=left)
+        self.echo_gates = {
+            board_id: PeerEchoGate()
+            for board_id in self.bridges
+        }
         self.peer_status = {
             "enabled": self.peer_mode,
             "delay_ms": 250,
             "target_fraction": 0.5,
             "source_response_gain": 3.0,
+            "peer_severity_gain": 1.5,
+            "peer_amplitude_rev": 3.0,
+            "base_rpm": 100.0,
+            "base_accel_rpm_s": 50.0,
+            "reaction_speed_gain": 1.5,
+            "reaction_accel_gain": 1.5,
+            "peer_cycles": 2,
             "last_commands": {},
             "sources": {},
         }
@@ -291,9 +303,29 @@ class MultiSerialBridge:
             if self.followers else 0.5
         )
         if was_enabled and not self.peer_mode:
+            now_ms = int(time.monotonic() * 1000)
+            for board_id, previous in list(self.last_peer_commands.items()):
+                if not previous or previous.get("cmd") != "rock":
+                    continue
+                try:
+                    self.bridges[board_id].send({
+                        "cmd": "stop",
+                        "reason": "peer_disabled",
+                    })
+                    self.echo_gates[board_id].trigger(now_ms, {
+                        "cmd": "stop",
+                        "reason": "peer_disabled",
+                    })
+                except Exception:
+                    # A disconnected board will report its state separately;
+                    # do not block disabling peer mode for the other board.
+                    pass
             for follower in self.followers.values():
                 follower.last_command = None
+                follower.pending = []
             self.peer_status["last_commands"] = {}
+            self.last_peer_commands.clear()
+            self.last_peer_send_ms.clear()
         return self.peer_status
 
     def _peer_loop(self):
@@ -307,6 +339,10 @@ class MultiSerialBridge:
             }
             sources = {}
             for board_id, state in states.items():
+                echo_suppressed = self.echo_gates[board_id].is_suppressed(now_ms)
+                sources[board_id] = {
+                    "echo_suppressed": echo_suppressed,
+                }
                 fresh = (
                     state.get("connected")
                     and state.get("last_rx") is not None
@@ -318,15 +354,17 @@ class MultiSerialBridge:
                     packet = self.publishers[board_id].update(
                         state.get("imu", {}), now_ms
                     )
-                    sources[board_id] = {
+                    sources[board_id].update({
                         "gyro_dps": round(features["gyro_dps"], 2),
                         "dynamic_accel_mps2": round(
                             features["dynamic_accel_mps2"], 2
                         ),
                         "intensity": round(publisher.filter.intensity, 3),
                         "active": publisher.filter.active,
-                    }
-                    if packet is not None:
+                    })
+                    # Always update the local filter, but do not forward
+                    # motion while this board is reacting to its peer.
+                    if packet is not None and not echo_suppressed:
                         other_id = next(
                             candidate for candidate in self.bridges
                             if candidate != board_id
@@ -340,7 +378,12 @@ class MultiSerialBridge:
                     and states[board_id].get("last_rx") is not None
                     and time.time() - states[board_id]["last_rx"] < 0.5
                 )
-                if command is None or not target_fresh:
+                if command is None:
+                    continue
+                # A stop is safety-critical and should still be attempted if
+                # telemetry has gone stale; a new motion command requires a
+                # fresh target board before it is sent.
+                if command.get("cmd") != "stop" and not target_fresh:
                     continue
                 previous = self.last_peer_commands.get(board_id)
                 # The firmware starts a new ramp whenever it receives a
@@ -368,6 +411,7 @@ class MultiSerialBridge:
                     if outgoing.get("cmd") == "rock":
                         outgoing["intensity"] = 1.0
                     self.bridges[board_id].send(outgoing)
+                    self.echo_gates[board_id].trigger(now_ms, outgoing)
                     self.last_peer_commands[board_id] = command
                     self.last_peer_send_ms[board_id] = now_ms
                     commands[board_id] = command
@@ -381,11 +425,43 @@ class MultiSerialBridge:
                     next(iter(self.followers.values())).source_response_gain
                     if self.followers else 3.0
                 ),
+                "peer_severity_gain": (
+                    next(iter(self.followers.values())).peer_severity_gain
+                    if self.followers else 1.5
+                ),
+                "peer_amplitude_rev": (
+                    next(iter(self.followers.values())).base_amplitude_rev
+                    if self.followers else 3.0
+                ),
+                "base_rpm": (
+                    next(iter(self.followers.values())).base_rpm
+                    if self.followers else 100.0
+                ),
+                "base_accel_rpm_s": (
+                    next(iter(self.followers.values())).base_accel_rpm_s
+                    if self.followers else 50.0
+                ),
+                "reaction_speed_gain": (
+                    next(iter(self.followers.values())).reaction_speed_gain
+                    if self.followers else 1.5
+                ),
+                "reaction_accel_gain": (
+                    next(iter(self.followers.values())).reaction_accel_gain
+                    if self.followers else 1.5
+                ),
+                "peer_cycles": (
+                    next(iter(self.followers.values())).peer_cycles
+                    if self.followers else 2
+                ),
                 "last_commands": commands,
                 "sources": sources,
                 "followers": {
                     board_id: follower.status(now_ms)
                     for board_id, follower in self.followers.items()
+                },
+                "echo_gates": {
+                    board_id: gate.status(now_ms)
+                    for board_id, gate in self.echo_gates.items()
                 },
             }
             if self.followers:

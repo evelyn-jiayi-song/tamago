@@ -19,13 +19,23 @@ DEFAULT_STOP_THRESHOLD = 0.10
 DEFAULT_PUBLISH_PERIOD_MS = 50
 DEFAULT_RIPPLE_DELAY_MS = 250
 DEFAULT_TARGET_FRACTION = 0.50
-DEFAULT_STALE_TIMEOUT_MS = 800
-DEFAULT_BASE_RPM = 60.0
-DEFAULT_BASE_AMPLITUDE_REV = 0.25
-DEFAULT_MAX_RPM = 60.0
-DEFAULT_MAX_ACCEL_RPM_S = 30.0
-DEFAULT_MIN_EFFECTIVE_INTENSITY = 0.08
+DEFAULT_STALE_TIMEOUT_MS = 1000
+DEFAULT_BASE_RPM = 100.0
+DEFAULT_BASE_AMPLITUDE_REV = 2
+DEFAULT_BASE_ACCEL_RPM_S = 50.0
+# Peer reactions intentionally use a longer travel than the original manual
+# wobble profile. The source constant remains available for non-peer callers.
+DEFAULT_PEER_AMPLITUDE_REV = 3.0
+DEFAULT_MAX_RPM = 200.0
+DEFAULT_MAX_ACCEL_RPM_S = 100.0
+DEFAULT_MIN_EFFECTIVE_INTENSITY = 0.2
 DEFAULT_SOURCE_RESPONSE_GAIN = 3.0
+DEFAULT_PEER_SEVERITY_GAIN = 1.5
+DEFAULT_REACTION_SPEED_GAIN = 1.5
+DEFAULT_REACTION_ACCEL_GAIN = 1.5
+DEFAULT_PEER_CYCLES = 2
+DEFAULT_PEER_REACTION_HOLD_MS = 2500
+DEFAULT_PEER_STOP_COOLDOWN_MS = 350
 
 
 def clamp(value, low, high):
@@ -168,6 +178,60 @@ class ReferencePublisher:
         }
 
 
+class PeerEchoGate:
+    """Temporarily suppress a follower's motion from being sent back.
+
+    The board that receives a peer command will also move its body and IMU.
+    Without a hold window, that response can be mistaken for a new source
+    gesture and create an endless two-board feedback loop.  The gate is a
+    transport-side guard; it does not stop the local motor.
+    """
+
+    def __init__(self, reaction_hold_ms=DEFAULT_PEER_REACTION_HOLD_MS,
+                 stop_cooldown_ms=DEFAULT_PEER_STOP_COOLDOWN_MS):
+        self.reaction_hold_ms = int(reaction_hold_ms)
+        self.stop_cooldown_ms = int(stop_cooldown_ms)
+        if self.reaction_hold_ms <= 0 or self.stop_cooldown_ms < 0:
+            raise ValueError("peer gate durations must be positive/non-negative")
+        self.suppressed_until_ms = 0
+        self.last_reason = "open"
+
+    def trigger(self, now_ms, command):
+        """Hold the gate after a peer reaction or its explicit stop."""
+        now_ms = int(now_ms)
+        command = command if isinstance(command, dict) else {}
+        if command.get("cmd") == "rock":
+            duration_ms = int(command.get(
+                "reaction_hold_ms", self.reaction_hold_ms
+            ))
+            duration_ms = max(1, duration_ms)
+            self.suppressed_until_ms = max(
+                self.suppressed_until_ms, now_ms + duration_ms
+            )
+            self.last_reason = "peer_reaction"
+        elif command.get("cmd") == "stop":
+            cooldown_ms = int(command.get(
+                "stop_cooldown_ms", self.stop_cooldown_ms
+            ))
+            cooldown_ms = max(0, cooldown_ms)
+            self.suppressed_until_ms = max(
+                self.suppressed_until_ms, now_ms + cooldown_ms
+            )
+            self.last_reason = "peer_stop_cooldown"
+
+    def is_suppressed(self, now_ms):
+        return int(now_ms) < self.suppressed_until_ms
+
+    def status(self, now_ms):
+        now_ms = int(now_ms)
+        return {
+            "echo_suppressed": self.is_suppressed(now_ms),
+            "suppressed_until_ms": self.suppressed_until_ms,
+            "remaining_ms": max(0, self.suppressed_until_ms - now_ms),
+            "last_reason": self.last_reason,
+        }
+
+
 class FollowerController:
     """Board B: delay, scale, and safety-gate the reference packet stream."""
 
@@ -175,11 +239,18 @@ class FollowerController:
                  delay_ms=DEFAULT_RIPPLE_DELAY_MS,
                  stale_timeout_ms=DEFAULT_STALE_TIMEOUT_MS,
                  base_rpm=DEFAULT_BASE_RPM,
-                 base_amplitude_rev=DEFAULT_BASE_AMPLITUDE_REV,
+                 base_amplitude_rev=DEFAULT_PEER_AMPLITUDE_REV,
+                 base_accel_rpm_s=DEFAULT_BASE_ACCEL_RPM_S,
                  max_rpm=DEFAULT_MAX_RPM,
                  max_accel_rpm_s=DEFAULT_MAX_ACCEL_RPM_S,
                  min_effective_intensity=DEFAULT_MIN_EFFECTIVE_INTENSITY,
-                 source_response_gain=DEFAULT_SOURCE_RESPONSE_GAIN):
+                 source_response_gain=DEFAULT_SOURCE_RESPONSE_GAIN,
+                 peer_severity_gain=DEFAULT_PEER_SEVERITY_GAIN,
+                 reaction_speed_gain=DEFAULT_REACTION_SPEED_GAIN,
+                 reaction_accel_gain=DEFAULT_REACTION_ACCEL_GAIN,
+                 peer_cycles=DEFAULT_PEER_CYCLES,
+                 reaction_hold_ms=DEFAULT_PEER_REACTION_HOLD_MS,
+                 stop_cooldown_ms=DEFAULT_PEER_STOP_COOLDOWN_MS):
         if not 0 <= target_fraction <= 1:
             raise ValueError("target_fraction must be between 0 and 1")
         if delay_ms < 0 or stale_timeout_ms <= 0:
@@ -190,14 +261,31 @@ class FollowerController:
         self.stale_timeout_ms = int(stale_timeout_ms)
         self.base_rpm = float(base_rpm)
         self.base_amplitude_rev = float(base_amplitude_rev)
+        self.base_accel_rpm_s = float(base_accel_rpm_s)
         self.max_rpm = float(max_rpm)
         self.max_accel_rpm_s = float(max_accel_rpm_s)
+        if self.base_rpm <= 0 or self.base_accel_rpm_s <= 0:
+            raise ValueError("base RPM and acceleration must be positive")
         self.min_effective_intensity = float(min_effective_intensity)
         if self.min_effective_intensity < 0:
             raise ValueError("min_effective_intensity must be non-negative")
         if source_response_gain <= 0:
             raise ValueError("source_response_gain must be positive")
         self.source_response_gain = float(source_response_gain)
+        if peer_severity_gain <= 0:
+            raise ValueError("peer_severity_gain must be positive")
+        self.peer_severity_gain = float(peer_severity_gain)
+        if reaction_speed_gain <= 0 or reaction_accel_gain <= 0:
+            raise ValueError("reaction gains must be positive")
+        self.reaction_speed_gain = float(reaction_speed_gain)
+        self.reaction_accel_gain = float(reaction_accel_gain)
+        self.peer_cycles = int(peer_cycles)
+        if self.peer_cycles <= 0:
+            raise ValueError("peer_cycles must be positive for finite reactions")
+        self.reaction_hold_ms = int(reaction_hold_ms)
+        self.stop_cooldown_ms = int(stop_cooldown_ms)
+        if self.reaction_hold_ms <= 0 or self.stop_cooldown_ms < 0:
+            raise ValueError("peer reaction/stop durations must be positive/non-negative")
         self.pending = []
         self.last_sequence = -1
         self.last_rx_ms = None
@@ -220,6 +308,11 @@ class FollowerController:
     def _same_command(left, right):
         if left is None or right is None:
             return left == right
+        # STOP packets are intentionally published more than once so a
+        # delayed follower can recover safely. They are the same motor intent
+        # even when the publisher increments the transport sequence number.
+        if left.get("cmd") == right.get("cmd") == "stop":
+            return left.get("reason") == right.get("reason")
         for key in ("cmd", "source_seq", "reason"):
             if left.get(key) != right.get(key):
                 return False
@@ -235,18 +328,50 @@ class FollowerController:
         normalized_source = clamp(
             source_intensity * self.source_response_gain, 0.0, 1.0
         )
-        effective = clamp(normalized_source * self.target_fraction, 0.0, 1.0)
+        effective = clamp(
+            normalized_source * self.target_fraction * self.peer_severity_gain,
+            0.0,
+            1.0,
+        )
         if packet.get("kind") == STOP_PACKET or effective < self.min_effective_intensity:
-            return None
+            return {
+                "cmd": "stop",
+                "source_seq": int(packet["seq"]),
+                "reason": "peer_stop",
+                "stop_cooldown_ms": self.stop_cooldown_ms,
+            }
+        rpm = min(
+            self.max_rpm,
+            self.base_rpm * self.reaction_speed_gain * effective,
+        )
+        accel = min(
+            self.max_accel_rpm_s,
+            self.base_accel_rpm_s * self.reaction_accel_gain * effective,
+        )
+        amplitude_rev = self.base_amplitude_rev * effective
+        # Estimate how long the finite rock needs to ramp and complete its
+        # one-cycle travel.  The echo gate uses this to cover the physical
+        # reaction, not just the host command latency.
+        ramp_s = max(0.0, rpm - 1.0) / max(accel, 1.0)
+        travel_s = (
+            2.0 * amplitude_rev * self.peer_cycles
+            * 60.0 / max(rpm, 1.0)
+        )
+        reaction_hold_ms = max(
+            self.reaction_hold_ms,
+            int(round((ramp_s + travel_s + 0.5) * 1000.0)),
+        )
         return {
             "cmd": "rock",
             "source_seq": int(packet["seq"]),
+            "reason": "peer_motion",
             "intensity": round(effective, 4),
-            "rpm": round(min(self.max_rpm, self.base_rpm * effective), 3),
-            "amplitude_rev": round(self.base_amplitude_rev * effective, 4),
-            "accel": min(self.max_accel_rpm_s, self.max_accel_rpm_s * effective),
+            "rpm": round(rpm, 3),
+            "amplitude_rev": round(amplitude_rev, 4),
+            "accel": accel,
             "direction": 1,
-            "cycles": 0,
+            "cycles": self.peer_cycles,
+            "reaction_hold_ms": reaction_hold_ms,
         }
 
     def tick(self, now_ms):
@@ -264,12 +389,16 @@ class FollowerController:
         if self.last_rx_ms is None:
             command = None
         elif now_ms - self.last_rx_ms > self.stale_timeout_ms:
-            command = None
+            command = {
+                "cmd": "stop",
+                "source_seq": self.last_sequence,
+                "reason": "peer_stale",
+                "stop_cooldown_ms": self.stop_cooldown_ms,
+            }
             self.last_reason = "peer_stale"
         elif due is not None:
             command = self._command_for(due)
-            if command is not None:
-                self.last_reason = command.get("reason", "peer_motion")
+            self.last_reason = command.get("reason", "peer_motion")
         else:
             command = None
 
@@ -289,5 +418,14 @@ class FollowerController:
             "delay_ms": self.delay_ms,
             "target_fraction": self.target_fraction,
             "source_response_gain": self.source_response_gain,
+            "peer_severity_gain": self.peer_severity_gain,
+            "peer_amplitude_rev": self.base_amplitude_rev,
+            "base_rpm": self.base_rpm,
+            "base_accel_rpm_s": self.base_accel_rpm_s,
+            "reaction_speed_gain": self.reaction_speed_gain,
+            "reaction_accel_gain": self.reaction_accel_gain,
+            "peer_cycles": self.peer_cycles,
+            "reaction_hold_ms": self.reaction_hold_ms,
+            "stop_cooldown_ms": self.stop_cooldown_ms,
             "stale_timeout_ms": self.stale_timeout_ms,
         }

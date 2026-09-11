@@ -49,3 +49,42 @@ python3 -m unittest -v test_ripple_model
 
 The tests cover grid neighbors, central push immediacy, distance-based timing,
 damping, and reset behavior.
+
+## Exportable 4×4 ripple video
+
+`render_ripple_video.py` creates a presentation-ready technical visualization
+with one amber central source and sixteen cyan receiver eggs in a 4×4 lattice.
+The expanding ring shows the delayed radial wavefront; receiver labels show the
+distance-damped amplitude while each receiver is active.
+
+Regenerate the video from the repository root with:
+
+```bash
+python3 simulator/ripple_3d/render_ripple_video.py
+```
+
+Output: `simulator/ripple_3d/output/ripple_4x4.mp4`
+
+The export is deterministic and has a duration of **8.00 s**, **30 fps**, and
+**1280×720 px** resolution. It uses Pillow for frame drawing and the bundled
+`encode_mp4.m` helper with macOS AVFoundation for H.264 MP4 encoding. On this
+machine, the system `clang` compiler and AVFoundation are the only additional
+dependencies; Blender and a system `ffmpeg` executable are not required.
+
+### Model shown in the export
+
+The source trigger is at `t₀ = 0.50 s`. For receiver `i`, with radial distance
+`dᵢ` in grid units, grid pitch `p = 2.00 grid units`, propagation speed
+`v = 2.40 grid units/s`, and damping `D = 0.72× per grid unit`:
+
+```text
+tᵢ = t₀ + dᵢ / v
+Aᵢ = A₀ · D^(dᵢ / p)
+Eᵢ ∝ Aᵢ²
+```
+
+The energy story is intentionally explicit: electrical input → mechanical
+wobble at the source → coupled motion at delayed receivers → dissipation.
+`A₀ = 1.00 normalized tilt`, `f = 2.80 Hz`, and the wobble envelope duration
+is `τ = 1.20 s`. These are explanatory parameters, not calibrated hardware
+measurements. Coordinates use grid units and all time values use seconds.

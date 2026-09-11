@@ -19,7 +19,12 @@ SIMULATOR_DIR = DASHBOARD_DIR.parent
 if str(SIMULATOR_DIR) not in sys.path:
     sys.path.insert(0, str(SIMULATOR_DIR))
 
-from dual_board.ripple_logic import FollowerController, ReferencePublisher
+from dual_board.ripple_logic import (
+    FollowerController,
+    PeerEchoGate,
+    ReferencePublisher,
+    motion_features,
+)
 
 
 class PeerRelay:
@@ -37,12 +42,25 @@ class PeerRelay:
             left, right = self.board_ids
             self.followers[left] = FollowerController(source=right)
             self.followers[right] = FollowerController(source=left)
+        self.echo_gates = {
+            board_id: PeerEchoGate()
+            for board_id in self.board_ids
+        }
         self.lock = threading.Lock()
         self.last_status = {
             "enabled": False,
             "delay_ms": 250,
             "target_fraction": 0.5,
+            "source_response_gain": 3.0,
+            "peer_severity_gain": 1.5,
+            "peer_amplitude_rev": 3.0,
+            "base_rpm": 100.0,
+            "base_accel_rpm_s": 50.0,
+            "reaction_speed_gain": 1.5,
+            "reaction_accel_gain": 1.5,
+            "peer_cycles": 2,
             "last_commands": {},
+            "sources": {},
         }
 
     def set_enabled(self, enabled):
@@ -61,13 +79,29 @@ class PeerRelay:
             if not self.enabled or len(self.board_ids) != 2:
                 return
             now_ms = int(time.monotonic() * 1000)
+            sources = {}
             for board_id in self.board_ids:
                 state = states.get(board_id, {})
+                echo_suppressed = self.echo_gates[board_id].is_suppressed(now_ms)
+                sources[board_id] = {
+                    "echo_suppressed": echo_suppressed,
+                }
                 if state.get("connected") is not False:
+                    features = motion_features(state.get("imu", {}))
                     packet = self.publishers[board_id].update(
                         state.get("imu", {}), now_ms
                     )
-                    if packet is not None:
+                    sources[board_id].update({
+                        "gyro_dps": round(features["gyro_dps"], 2),
+                        "dynamic_accel_mps2": round(
+                            features["dynamic_accel_mps2"], 2
+                        ),
+                        "intensity": round(
+                            self.publishers[board_id].filter.intensity, 3
+                        ),
+                        "active": self.publishers[board_id].filter.active,
+                    })
+                    if packet is not None and not echo_suppressed:
                         other_id = next(
                             candidate for candidate in self.board_ids
                             if candidate != board_id
@@ -79,7 +113,14 @@ class PeerRelay:
                 command = follower.tick(now_ms)
                 if command is not None and states.get(board_id, {}).get("connected"):
                     try:
-                        post_command(board_id, command)
+                        outgoing = dict(command)
+                        # The follower already folds intensity into RPM and
+                        # amplitude. Prevent the board firmware from applying
+                        # that scale a second time.
+                        if outgoing.get("cmd") == "rock":
+                            outgoing["intensity"] = 1.0
+                        post_command(board_id, outgoing)
+                        self.echo_gates[board_id].trigger(now_ms, outgoing)
                         commands[board_id] = command
                     except (OSError, URLError, ValueError) as exc:
                         commands[board_id] = {
@@ -90,10 +131,39 @@ class PeerRelay:
                 "enabled": True,
                 "delay_ms": 250,
                 "target_fraction": 0.5,
+                "source_response_gain": next(
+                    iter(self.followers.values())
+                ).source_response_gain if self.followers else 3.0,
+                "peer_severity_gain": next(
+                    iter(self.followers.values())
+                ).peer_severity_gain if self.followers else 1.5,
+                "peer_amplitude_rev": next(
+                    iter(self.followers.values())
+                ).base_amplitude_rev if self.followers else 3.0,
+                "base_rpm": next(
+                    iter(self.followers.values())
+                ).base_rpm if self.followers else 100.0,
+                "base_accel_rpm_s": next(
+                    iter(self.followers.values())
+                ).base_accel_rpm_s if self.followers else 50.0,
+                "reaction_speed_gain": next(
+                    iter(self.followers.values())
+                ).reaction_speed_gain if self.followers else 1.5,
+                "reaction_accel_gain": next(
+                    iter(self.followers.values())
+                ).reaction_accel_gain if self.followers else 1.5,
+                "peer_cycles": next(
+                    iter(self.followers.values())
+                ).peer_cycles if self.followers else 2,
                 "last_commands": commands,
+                "sources": sources,
                 "followers": {
                     board_id: follower.status(now_ms)
                     for board_id, follower in self.followers.items()
+                },
+                "echo_gates": {
+                    board_id: gate.status(now_ms)
+                    for board_id, gate in self.echo_gates.items()
                 },
             }
 

@@ -5,19 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Wobble / Motor Deck</title>
   <style>
-    :root { --bg:#0e1218; --panel:#151c25; --panel2:#1c2632; --line:#2a3746; --text:#e9eef4; --muted:#8d9bad; --cyan:#63e6e2; --amber:#ffc857; --red:#ff6b6b; --green:#69db9a; }
+    :root { --bg:#110224; --panel:#1a1921; --panel2:#24232c; --panel3:#2e2c37; --plot-bg:#12121a; --line:#504b5a; --line-soft:#37333f; --text:#f8f8f2; --muted:#b6afbf; --purple:#bd93f9; --purple2:#a88bd9; --pink:#e7a6c8; --red:#ff5555; --green:#50fa7b; --amber:#ffb86c; }
     * { box-sizing:border-box; }
-    body { margin:0; color:var(--text); background:radial-gradient(circle at 80% -20%, #243746 0, transparent 42%), var(--bg); font:14px/1.4 ui-sans-serif, system-ui, -apple-system, sans-serif; }
+    body { margin:0; color:var(--text); background:var(--bg); font:14px/1.4 ui-sans-serif, system-ui, -apple-system, sans-serif; }
     .wrap { max-width:1420px; margin:0 auto; padding:26px; }
     header { display:flex; justify-content:space-between; align-items:flex-end; gap:20px; margin-bottom:24px; }
     h1 { margin:0; font-size:30px; letter-spacing:-.04em; }
-    .eyebrow { color:var(--cyan); font-size:11px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; }
+    .eyebrow { color:var(--purple); font-size:11px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; }
     .subtitle { color:var(--muted); margin:4px 0 0; }
     .connection { display:flex; align-items:center; gap:9px; color:var(--muted); }
-    .dot { width:10px; height:10px; border-radius:50%; background:var(--red); box-shadow:0 0 14px currentColor; }
+    .dot { width:10px; height:10px; border-radius:50%; background:var(--red); }
     .dot.good { background:var(--green); color:var(--green); }
     .grid { display:grid; grid-template-columns:1.05fr 1.65fr 1fr; gap:16px; }
-    .panel { background:rgba(21,28,37,.9); border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:0 18px 50px rgba(0,0,0,.15); }
+    .panel { background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:none; }
     .panel h2 { margin:0 0 16px; font-size:15px; letter-spacing:.01em; }
     .panel h2 span { color:var(--muted); font-size:11px; font-weight:500; margin-left:7px; }
     .wide { grid-column:span 2; }
@@ -29,31 +29,31 @@
     .controls { display:grid; gap:16px; }
     .field { display:grid; gap:7px; }
     .field label { color:var(--muted); font-size:12px; display:flex; justify-content:space-between; }
-    input[type=number], select { width:100%; padding:10px 11px; border:1px solid var(--line); border-radius:9px; background:#0d131b; color:var(--text); font:inherit; }
-    input[type=range] { width:100%; accent-color:var(--cyan); }
-    .range-value { color:var(--cyan); font-variant-numeric:tabular-nums; }
+    input[type=number], select { width:100%; padding:10px 11px; border:1px solid var(--line); border-radius:9px; background:#17161d; color:var(--text); font:inherit; }
+    input[type=range] { width:100%; accent-color:var(--purple); }
+    .range-value { color:var(--purple); font-variant-numeric:tabular-nums; }
     .seg { display:flex; gap:7px; }
-    button { border:0; border-radius:9px; padding:11px 14px; color:var(--text); background:#2a3746; cursor:pointer; font:650 13px inherit; transition:.15s; }
+    button { border:1px solid var(--line); border-radius:9px; padding:11px 14px; color:var(--text); background:var(--panel3); cursor:pointer; font:650 13px inherit; transition:.15s; }
     button:hover { filter:brightness(1.15); transform:translateY(-1px); }
-    button.primary { background:var(--cyan); color:#062126; }
+    button.primary { background:var(--purple); border-color:var(--purple); color:#1a0735; }
     button.danger { background:var(--red); color:#2b0808; }
-    button.secondary { background:transparent; border:1px solid var(--line); }
-    .dir.active { border-color:var(--cyan); color:var(--cyan); background:rgba(99,230,226,.08); }
+    button.secondary { background:var(--panel2); border:1px solid var(--line); }
+    .dir.active { border-color:var(--purple); color:var(--purple); background:var(--panel3); }
     .actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
     .actions .danger { grid-column:span 2; }
-    .status-line { display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid rgba(42,55,70,.65); }
+    .status-line { display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--line-soft); }
     .status-line:last-child { border:0; }
     .status-line span:first-child { color:var(--muted); }
-    .pill { padding:3px 8px; border-radius:30px; font-size:11px; color:var(--amber); background:rgba(255,200,87,.12); }
-    .pill.good { color:var(--green); background:rgba(105,219,154,.12); }
-    .pill.bad { color:var(--red); background:rgba(255,107,107,.12); }
-    canvas { width:100%; height:280px; display:block; background:#101720; border-radius:11px; }
+    .pill { padding:3px 8px; border-radius:30px; font-size:11px; color:var(--amber); background:#4a2d20; }
+    .pill.good { color:var(--green); background:#173c2b; }
+    .pill.bad { color:var(--red); background:#5d1e3a; }
+    canvas { width:100%; height:280px; display:block; background:var(--plot-bg); border-radius:11px; }
     .legend { display:flex; gap:16px; color:var(--muted); font-size:11px; margin-top:10px; }
     .legend i { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:5px; }
     .note { color:var(--muted); font-size:12px; margin-top:14px; }
     .error { color:var(--red); min-height:18px; margin-top:10px; font-size:12px; }
-    .progress { height:8px; background:#0c1219; border-radius:99px; overflow:hidden; margin-top:12px; }
-    .progress > div { height:100%; width:0; background:linear-gradient(90deg,var(--cyan),#99f6e4); transition:width .2s; }
+    .progress { height:8px; background:#17052d; border-radius:99px; overflow:hidden; margin-top:12px; }
+    .progress > div { height:100%; width:0; background:var(--purple); transition:width .2s; }
     .board-overview { grid-column:1 / -1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
     .board-card { background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:14px; }
     .board-card h3 { margin:0 0 10px; font-size:14px; display:flex; justify-content:space-between; }
@@ -65,9 +65,10 @@
     .peer-status { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:16px; }
     .peer-status .metric { min-height:64px; }
     .plot-grid { grid-column:1 / -1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
-    .plot-panel canvas { width:100%; height:220px; display:block; background:#101720; border-radius:11px; }
+    .plot-panel canvas { width:100%; height:220px; display:block; background:var(--plot-bg); border-radius:11px; }
     .plot-legend { display:flex; gap:12px; flex-wrap:wrap; color:var(--muted); font-size:11px; margin-top:9px; }
     .plot-legend i { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:4px; }
+    .plot-scale { display:flex; justify-content:space-between; gap:12px; color:var(--muted); font-size:10px; margin-top:7px; }
     .interlink { grid-column:1 / -1; display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px; }
     @media (max-width:1000px) { .command-grid,.orientation-grid { grid-template-columns:1fr; } .peer-controls { grid-template-columns:1fr; } }
     @media (max-width:1000px) { .grid { grid-template-columns:1fr 1fr; } .wide { grid-column:span 2; } }
@@ -126,14 +127,16 @@
 
       <section class="plot-grid">
         <article class="panel plot-panel">
-          <h2>Wobble angle history <span>relative IMU roll / pitch</span></h2>
+          <h2>Wobble angle history <span>relative IMU roll / pitch · degrees (°) · 18 s window</span></h2>
           <canvas id="anglePlot" width="640" height="220"></canvas>
-          <div class="plot-legend"><span><i style="background:#63e6e2"></i>Egg A pitch</span><span><i style="background:#ffc857"></i>Egg B pitch</span><span><i style="background:#69db9a"></i>Egg A roll</span><span><i style="background:#ff8fab"></i>Egg B roll</span></div>
+          <div class="plot-scale"><span>Y: angle (°), zero centered</span><span>X: last 18 s →</span></div>
+          <div class="plot-legend"><span><i style="background:#c2a9f2"></i>Egg A pitch (°)</span><span><i style="background:#e6a8c2"></i>Egg B pitch (°)</span><span><i style="background:#9ecfc0"></i>Egg A roll (°)</span><span><i style="background:#e8bd79"></i>Egg B roll (°)</span></div>
         </article>
         <article class="panel plot-panel">
-          <h2>IMU interlink <span>motion magnitude and board relationship</span></h2>
+          <h2>IMU interlink <span>paired motion traces · native units · 18 s window</span></h2>
           <canvas id="imuPlot" width="640" height="220"></canvas>
-          <div class="plot-legend"><span><i style="background:#63e6e2"></i>Egg A gyro</span><span><i style="background:#ffc857"></i>Egg B gyro</span><span><i style="background:#69db9a"></i>Egg A dynamic accel</span><span><i style="background:#ff8fab"></i>Egg B dynamic accel</span></div>
+          <div class="plot-scale"><span>Top: gyro magnitude (°/s) · bottom: dynamic acceleration (m/s²)</span><span>X: last 18 s →</span></div>
+          <div class="plot-legend"><span><i style="background:#c2a9f2"></i>Egg A gyro (°/s)</span><span><i style="background:#e6a8c2"></i>Egg B gyro (°/s)</span><span><i style="background:#9ecfc0"></i>Egg A dynamic accel (m/s²)</span><span><i style="background:#e8bd79"></i>Egg B dynamic accel (m/s²)</span></div>
           <div class="interlink"><div class="metric"><label>Pitch delta</label><strong id="pitchDelta">—</strong><span class="unit">°</span></div><div class="metric"><label>Roll delta</label><strong id="rollDelta">—</strong><span class="unit">°</span></div><div class="metric"><label>Gyro delta</label><strong id="gyroDelta">—</strong><span class="unit">dps</span></div></div>
         </article>
       </section>
@@ -142,11 +145,11 @@
         <h2>Peer mode <span>optional laptop-relayed coordination</span></h2>
         <div class="peer-controls">
           <div class="field"><label for="peerIntensity">Follower intensity <span class="range-value"><b id="peerIntensityValue">0.50</b></span></label><input id="peerIntensity" type="range" min="0.05" max="1" step="0.05" value="0.5"></div>
-          <div><div class="status-line"><span>Relay status</span><span id="peer">off</span></div><div class="status-line"><span>Response gain</span><span id="peerGain">—</span></div></div>
+          <div><div class="status-line"><span>Relay status</span><span id="peer">off</span></div><div class="status-line"><span>Reaction gains</span><span id="peerGain">—</span></div></div>
           <button class="primary" id="peerToggle">Enable peer relay</button>
         </div>
         <div class="peer-status"><div class="metric"><label>Egg A source</label><strong id="sourceA">—</strong></div><div class="metric"><label>Egg B source</label><strong id="sourceB">—</strong></div><div class="metric"><label>Last peer commands</label><strong id="peerCommands">—</strong></div></div>
-        <div class="note">Record origin only while the selected egg is physically upright and stopped. Return uses clockwise travel only and preserves the IMU tare separately. Each motion command targets its own egg.</div>
+        <div class="note">Peer reactions run for two finite cycles with a 3.00 rev base travel, emit an explicit stop, and suppress the follower’s IMU from returning to the source during the reaction window. Base speed is 100 RPM and base acceleration is 50 RPM/s; outputs remain capped by firmware limits. Direct board-to-board Wi-Fi remains a later transport.</div>
       </article>
     </section>
   </main>
@@ -263,7 +266,7 @@
       $('peerIntensity').value = state.peer ? Number(state.peer.target_fraction || 0.5) : 0.5;
       $('peerIntensityValue').textContent = Number($('peerIntensity').value).toFixed(2);
       $('peer').textContent = state.peer && state.peer.enabled ? 'enabled' : 'off';
-      $('peerGain').textContent = state.peer ? `${fixed(state.peer.source_response_gain, 1)}×` : '—';
+      $('peerGain').textContent = state.peer ? `base ${fixed(state.peer.base_rpm, 0)} RPM / ${fixed(state.peer.base_accel_rpm_s, 0)} RPM/s · severity ${fixed(state.peer.peer_severity_gain, 1)}× · travel ${fixed(state.peer.peer_amplitude_rev, 2)} rev · ${fixed(state.peer.peer_cycles, 0)} cycles` : '—';
       $('sourceA').textContent = formatSource(state.peer?.sources?.['egg-a']);
       $('sourceB').textContent = formatSource(state.peer?.sources?.['egg-b']);
       $('peerCommands').textContent = state.peer?.last_commands ? Object.keys(state.peer.last_commands).length : '—';
@@ -271,7 +274,7 @@
     }
     function formatSource(source) {
       if (!source) return '—';
-      return `${source.active ? 'active' : 'idle'} · ${fixed(source.intensity, 2)}`;
+      return `${source.active ? 'active' : 'idle'} · ${fixed(source.intensity, 2)}${source.echo_suppressed ? ' · echo gate' : ''}`;
     }
     const plotHistory = {angle: { 'egg-a': [], 'egg-b': [] }, imu: { 'egg-a': [], 'egg-b': [] }};
     function pushHistory(state) {
@@ -295,8 +298,8 @@
     }
     function drawPlot(canvasId, series, maxAbs, colors) {
       const canvas = $(canvasId), ctx = canvas.getContext('2d'), w = canvas.width, h = canvas.height;
-      ctx.clearRect(0, 0, w, h); ctx.fillStyle = '#101720'; ctx.fillRect(0, 0, w, h);
-      ctx.strokeStyle = '#2a3746'; ctx.lineWidth = 1;
+      ctx.clearRect(0, 0, w, h); ctx.fillStyle = '#12121a'; ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = '#37333f'; ctx.lineWidth = 1;
       for (let i = 1; i < 4; i++) { const y = h * i / 4; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
       const values = Object.values(series).flatMap(items => items.flatMap(sample => Object.values(sample)));
       const scale = Math.max(maxAbs, ...values.map(value => Math.abs(value)), 1);
@@ -308,12 +311,41 @@
           index ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
         }); ctx.stroke();
       }));
-      ctx.strokeStyle = '#8d9bad'; ctx.beginPath(); ctx.moveTo(0,h/2); ctx.lineTo(w,h/2); ctx.stroke();
+      ctx.strokeStyle = '#70697c'; ctx.beginPath(); ctx.moveTo(0,h/2); ctx.lineTo(w,h/2); ctx.stroke();
+    }
+    function drawTrace(ctx, series, key, top, height, maxAbs, colors, label, unit) {
+      const w = ctx.canvas.width;
+      const values = Object.values(series).flatMap(items => items.map(sample => Number(sample[key]) || 0));
+      const scale = Math.max(maxAbs, ...values.map(value => Math.abs(value)), 1);
+      ctx.strokeStyle = '#37333f'; ctx.lineWidth = 1;
+      for (let i = 0; i <= 2; i++) {
+        const y = top + height * i / 2;
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+      }
+      ctx.fillStyle = '#b6afbf'; ctx.font = '10px ui-sans-serif, system-ui, sans-serif';
+      ctx.fillText(label, 8, top + 13);
+      ctx.fillText(`${scale.toFixed(1)} ${unit}`, Math.max(8, w - 66), top + 13);
+      Object.entries(series).forEach(([id, items]) => {
+        if (!items.length) return;
+        ctx.strokeStyle = colors[id]; ctx.lineWidth = 2; ctx.beginPath();
+        items.forEach((sample, index) => {
+          const x = index * w / 179;
+          const y = top + height - 8 - ((Number(sample[key]) || 0) / scale) * (height - 24);
+          index ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+        });
+        ctx.stroke();
+      });
+    }
+    function drawImuPlot(series) {
+      const canvas = $('imuPlot'), ctx = canvas.getContext('2d'), w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h); ctx.fillStyle = '#12121a'; ctx.fillRect(0, 0, w, h);
+      drawTrace(ctx, series, 'gyro', 0, 104, 20, {'egg-a':'#c2a9f2', 'egg-b':'#e6a8c2'}, 'gyro magnitude', '°/s');
+      drawTrace(ctx, series, 'dynamicAccel', 116, h - 116, 2.5, {'egg-a':'#9ecfc0', 'egg-b':'#e8bd79'}, 'dynamic acceleration', 'm/s²');
     }
     function renderPlots(state) {
       pushHistory(state);
-      drawPlot('anglePlot', plotHistory.angle, 30, {'egg-a':['#63e6e2','#69db9a'], 'egg-b':['#ffc857','#ff8fab']});
-      drawPlot('imuPlot', plotHistory.imu, 20, {'egg-a':['#63e6e2','#69db9a'], 'egg-b':['#ffc857','#ff8fab']});
+      drawPlot('anglePlot', plotHistory.angle, 30, {'egg-a':['#c2a9f2','#9ecfc0'], 'egg-b':['#e6a8c2','#e8bd79']});
+      drawImuPlot(plotHistory.imu);
       const a = (state.boards || {})['egg-a']?.imu || {}, b = (state.boards || {})['egg-b']?.imu || {};
       $('pitchDelta').textContent = fixed(Math.abs((Number(a.pitch)||0) - (Number(b.pitch)||0)), 1);
       $('rollDelta').textContent = fixed(Math.abs((Number(a.roll)||0) - (Number(b.roll)||0)), 1);

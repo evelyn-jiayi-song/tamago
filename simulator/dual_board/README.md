@@ -10,7 +10,8 @@ prototype has not been uploaded and does not issue motor commands.
 Board A is the reference/leader. It reads a BNO055 sample from the moving
 weight, filters a motion score, and sends a packet over ESP-NOW. Board B is the
 actuator/follower. It queues the packet, waits 250 ms, scales intensity to
-50%, and emits a motor *intent* for a later, explicit motor-driver adapter.
+the configured severity and target fraction, then emits a finite motor
+*intent* for a later, explicit motor-driver adapter.
 
 The flow is:
 
@@ -21,7 +22,7 @@ BNO055 sample on A
 gyro + dynamic acceleration → EMA + hysteresis → ESP-NOW packet
                                                      │
                                                      ▼
-                                      250 ms delay → × 0.50
+                              250 ms delay → intensity / severity mapping
                                                      │
                                                      ▼
                                    rock intent or safe stop on B
@@ -36,7 +37,7 @@ gyro + dynamic acceleration → EMA + hysteresis → ESP-NOW packet
 | `firmware/reference_node.py` | Board A adapter: IMU sample → transport packet |
 | `firmware/follower_node.py` | Board B adapter: transport packet → motor intent, never hardware output |
 | `simulate_ripple.py` | Synthetic IMU dry-run; no serial, Wi-Fi, ESP-NOW, or motor access |
-| `test_ripple_logic.py` | Six focused unit tests |
+| `test_ripple_logic.py` | Eight focused unit tests |
 
 ## Packet schema
 
@@ -76,8 +77,7 @@ raw_score   = 0.70 × gyro_score + 0.30 × accel_score
 
 The score is passed through an exponential moving average with time constant
 0.18 s. Hysteresis prevents chatter: motion starts at `0.18` and stops at
-`0.10`. A still, tilted egg has approximately 1 g acceleration but near-zero
-gyro, so tilt by itself does not trigger a ripple.
+`0.10`.
 
 Board A publishes at most every 50 ms and sends a transition packet
 immediately when active state changes. Board B accepts only packets from its
@@ -91,19 +91,23 @@ Defaults are intentionally conservative prototype values:
 |---|---:|
 | follower delay | 250 ms |
 | target fraction | 0.50 |
-| follower base RPM | 60 RPM |
-| follower maximum RPM | 60 RPM |
-| follower maximum acceleration | 30 RPM/s |
-| minimum effective intensity | 0.08 |
-| stale-peer timeout | 800 ms |
+| follower base RPM | 100 RPM |
+| follower base acceleration | 50 RPM/s |
+| peer severity gain | 1.5× |
+| peer base amplitude | 3.00 rev |
+| follower maximum RPM | 200 RPM |
+| follower maximum acceleration | 100 RPM/s |
+| minimum effective intensity | 0.20 |
+| stale-peer timeout | 1000 ms |
 
 For a valid motion packet:
 
 ```text
-effective_intensity = source_intensity × 0.50
-target_rpm          = min(60, 60 × effective_intensity)
-amplitude_rev       = 0.25 × effective_intensity
-accel               = min(30, 30 × effective_intensity)
+effective_intensity = clamp(source_intensity × 3.0 × 0.50 × 1.5, 0, 1)
+target_rpm          = min(200, 100 × 1.5 × effective_intensity)
+amplitude_rev       = 3.00 × effective_intensity
+accel               = min(100, 50 × 1.5 × effective_intensity)
+cycles               = 2
 ```
 
 The resulting dictionary is a proposed `rock` intent. It is not sent to a
@@ -113,7 +117,7 @@ motor limits and require a physical enable/stop policy.
 ## Timeout and safe stop
 
 Every accepted packet refreshes B’s peer age. If B receives no valid packet for
-more than 800 ms while a ripple is active, `FollowerController.tick()` emits
+more than 1000 ms while a ripple is active, `FollowerController.tick()` emits
 exactly one `{"cmd": "stop", "reason": "peer_stale"}` transition. A received
 `stop` packet is delayed by the same 250 ms and produces
 `reason: "peer_stop"`. The eventual hardware adapter must translate either
@@ -148,7 +152,7 @@ python3 simulator/dual_board/simulate_ripple.py --duration 4 --step-ms 50 --drop
 
 Expected evidence:
 
-- unit tests: `Ran 6 tests ... OK`
+- unit tests: `Ran 8 tests ... OK`
 - normal dry-run: an A→B stream, a 250 ms observed ripple delay, and rock/stop intents
 - dropped-packet dry-run: `stop` with `reason: 'peer_stale'`
 
@@ -167,4 +171,3 @@ drives a motor.
    then verify stop and stale-peer behavior before attaching the weight.
 
 This sequence is intentionally not executed by this prototype.
-
